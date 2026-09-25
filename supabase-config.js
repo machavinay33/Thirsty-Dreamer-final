@@ -4,6 +4,6 @@
  * NEVER place a Supabase service_role/secret key in this file.
  */
 window.SUPABASE_CONFIG = {
-  url: '', // Example: https://abcdefghijklmnopqrst.supabase.co
-  anonKey: '' // Supabase publishable key (or legacy anon key)
+  url: 'https://pwqpkvojlamnxuialcfi.supabase.co',
+  anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB3cXBrdm9qbGFtbnh1aWFsY2ZpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTAyNTg4NjAsImV4cCI6MjEwNTgzNDg2MH0.GH2ctWhbcmWVGXGlVYvBBgwNMxTLGCwPP5wmsWEXet4'
 };
