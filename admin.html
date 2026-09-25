@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="theme-color" content="#1a1712">
+  <title>Site editor · Thirsty Dreamer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:opsz,wght@6..96,400;6..96,500;6..96,600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/admin.css">
+</head>
+<body class="admin-body">
+  <header class="admin-top"><a href="/" class="admin-wordmark">THIRSTY DREAMER <span>· SITE EDITOR</span></a><nav><a href="/" target="_blank" rel="noopener">View website ↗</a><button id="sign-out" class="admin-secondary" hidden>Sign out</button></nav></header>
+  <main class="admin-main">
+    <section id="setup-notice" class="admin-notice" hidden></section>
+    <section id="login-panel" class="admin-panel login-panel">
+      <div class="eyebrow">PRIVATE AREA</div><h1>Welcome back.</h1><p>Sign in with the administrator account created in your Supabase project.</p>
+      <form id="login-form"><label>Email<input id="login-email" type="email" autocomplete="username" required></label><label>Password<input id="login-password" type="password" autocomplete="current-password" required minlength="8"></label><button class="btn btn-primary" type="submit">Sign in</button><p id="login-message" class="form-message" role="status"></p></form>
+    </section>
+    <section id="editor-panel" hidden>
+      <div class="admin-heading"><div><div class="eyebrow">CONTENT & MEDIA</div><h1>Site editor</h1><p>Edit the site's copy, links, video titles, and media. Your unpublished changes stay in this browser until saved.</p></div><div class="admin-heading-actions"><a class="admin-secondary" href="/" target="_blank" rel="noopener">Preview site ↗</a><button id="save-site" class="btn btn-primary" type="button">Save changes</button></div></div>
+      <div id="editor-message" class="admin-status" role="status" aria-live="polite"></div>
+      <div class="editor-layout"><div id="content-fields" class="content-fields"></div><aside class="media-panel admin-panel"><div class="eyebrow">SUPABASE STORAGE</div><h2>Media library</h2><p>Upload MP4/WebM videos and portraits. Large files use resumable uploads (50 MiB maximum per file). Media links are inserted into your content draft automatically.</p><label class="upload-target-label" for="upload-target">Choose a slot</label><select id="upload-target"></select><label class="upload-picker" for="media-file"><span class="upload-icon">↑</span><strong>Choose a file</strong><span>Video, portrait, or poster</span><input id="media-file" type="file" accept="video/mp4,video/webm,video/quicktime,image/jpeg,image/png,image/webp,image/avif" hidden></label><div class="upload-progress" id="upload-progress" hidden><div class="progress-track"><span id="progress-fill"></span></div><span id="progress-label">Preparing upload…</span></div><p class="micro-copy">Files are stored in the public <code>site-media</code> bucket. Only signed-in site admins can upload.</p><hr><div class="eyebrow">MAIL SIGN-UPS</div><h2>Audience list</h2><p>View registered Dream Journal and Secret Diners emails; export a CSV when needed.</p><div class="signup-actions"><button id="refresh-signups" class="admin-secondary" type="button">Refresh list</button><button id="export-signups" class="admin-secondary" type="button" disabled>Export CSV</button></div><p id="signup-count" class="micro-copy" role="status">Sign in to view sign-ups.</p><div id="signup-list" class="signup-list"></div></aside></div>
+    </section>
+  </main>
+  <div id="admin-toast" class="admin-toast" role="status" aria-live="polite"></div>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/tus-js-client@4.3.1/dist/tus.min.js"></script>
+  <script src="supabase-config.js"></script>
+  <script src="js/admin.js" defer></script>
+</body>
+</html>

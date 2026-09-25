@@ -1,16 +1,12 @@
-THIRSTY DREAMER MEDIA MANIFEST
+THIRSTY DREAMER — MEDIA UPLOADS
 
-VIDEOS (7):
-video-01.mp4
-video-02.mp4
-video-03.mp4
-video-04.mp4
-video-05.mp4
-video-06.mp4
-video-07.mp4
+Videos and the two portrait images are uploaded from /admin.html after the
+Supabase setup in ../README.md. The CMS uses the public-read site-media bucket
+for administrator uploads and stores media links with saved site content.
 
-PHOTOS (2):
-massi-photo-01.jpg
-massi-photo-02.jpg
+Supported files: MP4, WebM, MOV, JPEG, PNG, WebP, AVIF.
+Per-file limit: 50 MiB by default (subject to your Supabase project plan).
+Large video files use resumable TUS uploads.
 
-Replace files with the exact filenames above.
+Please upload Massi-approved final edits and photographs. Temporary artwork on
+the public site is intentional until finished media is supplied.

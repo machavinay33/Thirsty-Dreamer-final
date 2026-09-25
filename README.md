@@ -1,41 +1,60 @@
-# Thirsty Dreamer — Client-Ready VS Code Website
+# Thirsty Dreamer
 
-This version keeps the existing Thirsty Dreamer design and client copy, and adds a dedicated media system for **7 videos + 2 client photos**.
+A static, responsive personal website for Massimo “Massi” Zitti. The site keeps the established dark-olive, clay, cream, and paper palette and its original embedded display/body font files. Its copy and media are editable through a Supabase-backed admin page.
 
-## Media files to add
+## Deploy
 
-Put the client's seven final MP4 files here:
+This is a static website. The existing Vercel project can redeploy from the connected GitHub `main` branch after changes are pushed; no Vercel credentials are needed for the source update. The admin editor is at `/admin.html`.
 
-- `assets/videos/video-01.mp4`
-- `assets/videos/video-02.mp4`
-- `assets/videos/video-03.mp4`
-- `assets/videos/video-04.mp4`
-- `assets/videos/video-05.mp4`
-- `assets/videos/video-06.mp4`
-- `assets/videos/video-07.mp4`
+## Supabase setup (one-time)
 
-Put the two photos here:
+The page can render its bundled starter copy before Supabase is connected. The CMS, database-backed email signups, admin login, and Storage uploads require a Supabase project.
 
-- `assets/images/massi-photo-01.jpg`
-- `assets/images/massi-photo-02.jpg`
+1. Create an administrator user in **Supabase → Authentication → Users**. Use an email you control and set a password.
+2. Copy that user's **UUID**. In [`supabase/schema.sql`](supabase/schema.sql), replace the all-zero UUID in the bootstrap `insert into public.cms_admins` statement with it. Run the complete script once in **Supabase → SQL Editor**. It creates the CMS tables, enables row-level security, creates the public media bucket, and limits browser writes to the administrator.
+3. In **Supabase → Project Settings → API**, copy the project URL and its public **publishable key** (or legacy `anon` key). Put them in [`supabase-config.js`](supabase-config.js):
 
-The HTML does **not** need to be edited when you replace these files. The current placeholder artwork will automatically be replaced by the real media.
+   ```js
+   window.SUPABASE_CONFIG = {
+     url: 'https://YOUR_PROJECT_REF.supabase.co',
+     anonKey: 'YOUR_PUBLIC_PUBLISHABLE_OR_ANON_KEY'
+   };
+   ```
 
-## Run in VS Code
+4. Commit and push `supabase-config.js` to `main` to trigger the existing Vercel deployment. The publishable/anon key is intended for browser apps, but **the service-role/secret key must never go in website code**. Security comes from the SQL policies; do not skip those steps.
+5. Open `https://thirsty-dreamer-final.vercel.app/admin.html`, sign in, edit the copy/media, and choose **Save changes** to publish. The first save publishes the included starter content into Supabase.
 
-1. Extract the ZIP.
-2. Open the folder in VS Code.
-3. Install Live Server.
-4. Right-click `index.html` → **Open with Live Server**.
+The media bucket is public-read so visitors can watch the site's videos; uploads and changes require an authenticated administrator. Resumable TUS upload is used for large files. The configured per-file limit is **50 MiB** (you can raise it in `supabase/schema.sql` if your Supabase plan and project settings allow more). Accepted formats: MP4, WebM, MOV, JPEG, PNG, WebP, and AVIF.
 
-## Main editable files
+## What the CMS manages
 
-- `index.html` — page structure and client content
-- `css/style.css` — design, typography, layout and responsive styling
-- `js/script.js` — interactions and media handling
+- All website copy, headlines, section text, profile/bio paragraphs, journal stories, speaking topics, collaboration names, signup copy, contact details, and public links.
+- Add, remove, and reorder journal stories, videos, speaking topics, and social highlights.
+- Upload/replace videos and posters, and replace the two portrait images.
+- View and export the Dream Journal and Secret Diners sign-up list as CSV.
 
-## Client media section
+## Visitor interactions
 
-The new **In Motion** section contains seven video slots and a two-photo portrait section. Each video has a poster placeholder until the corresponding MP4 is added.
+- Mobile menu opens/closes and collapses after choosing a destination.
+- Journal cards open an accessible story dialog.
+- Contact, email, phone, Instagram, Mother Cocktail Bar, and speaking links navigate to their destination.
+- Email forms validate the address and required newsletter consent. When Supabase is connected, sign-ups are saved with an opt-in category; without it, a clearly labelled email fallback is used.
 
-The site also includes the client's existing sections for About, Newsletter, Seminars & Speaking, Social, Brand Partnerships, Secret Diners, Booking/Contact and Footer.
+## Local preview
+
+Serve the folder over HTTP (rather than opening files with `file://`) so `content.json` and browser scripts load correctly, for example:
+
+```bash
+python3 -m http.server 8080
+```
+
+Then open `http://localhost:8080/`.
+
+## Security and operations
+
+- No user passwords or service-role keys are committed. Admin sign-in uses Supabase Auth; CMS writes, private signup reads, and media uploads are restricted with PostgreSQL/Storage RLS policies.
+- Run the SQL in a Supabase project you own. A public website key alone cannot bootstrap the administrator or create tables.
+- New visitors can read public content and public media; only an admin can publish copy or upload media. The email-list table is not publicly readable.
+- The site's articles, videos, and portraits use curated copy and placeholders until an administrator uploads finished assets.
+
+Supabase implementation references: [Row Level Security](https://supabase.com/docs/guides/database/postgres/row-level-security), [Storage access control](https://supabase.com/docs/guides/storage/security/access-control), and [resumable uploads](https://supabase.com/docs/guides/storage/uploads/resumable-uploads).
