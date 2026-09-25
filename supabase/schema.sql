@@ -1,7 +1,5 @@
--- Thirsty Dreamer website CMS — run once in Supabase SQL Editor.
--- 1) Create the administrator account in Supabase Auth first.
--- 2) Replace the UUID below with that account's auth.users.id.
--- 3) Run this full script in the Supabase SQL Editor.
+-- Thirsty Dreamer website CMS — run in Supabase SQL Editor.
+-- After this schema, run the separate admin bootstrap INSERT in README.md.
 -- The site uses only the public/publishable key in browsers. Never use service_role here.
 
 create table if not exists public.cms_admins (
@@ -16,12 +14,6 @@ drop policy if exists "Admins can verify admin membership" on public.cms_admins;
 create policy "Admins can verify admin membership" on public.cms_admins
   for select to authenticated
   using (user_id = (select auth.uid()));
-
--- Bootstrap exactly the administrator account you intend to use.
--- Replace 00000000-0000-0000-0000-000000000000 before running.
-insert into public.cms_admins (user_id)
-values ('00000000-0000-0000-0000-000000000000'::uuid)
-on conflict (user_id) do nothing;
 
 create or replace function public.is_site_admin()
 returns boolean

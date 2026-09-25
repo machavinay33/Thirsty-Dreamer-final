@@ -10,9 +10,18 @@ This is a static website. The existing Vercel project can redeploy from the conn
 
 The page can render its bundled starter copy before Supabase is connected. The CMS, database-backed email signups, admin login, and Storage uploads require a Supabase project.
 
-1. Create an administrator user in **Supabase → Authentication → Users**. Use an email you control and set a password.
-2. Copy that user's **UUID**. In [`supabase/schema.sql`](supabase/schema.sql), replace the all-zero UUID in the bootstrap `insert into public.cms_admins` statement with it. Run the complete script once in **Supabase → SQL Editor**. It creates the CMS tables, enables row-level security, creates the public media bucket, and limits browser writes to the administrator.
-3. In **Supabase → Project Settings → API**, copy the project URL and its public **publishable key** (or legacy `anon` key). Put them in [`supabase-config.js`](supabase-config.js):
+1. Create an administrator user in **Supabase → Authentication → Users**. Use an email you control and set a password. If email confirmation is enabled, confirm the account (or mark it confirmed in the Supabase dashboard).
+2. Run [`supabase/schema.sql`](supabase/schema.sql) in **Supabase → SQL Editor**. It creates the CMS tables, enables row-level security, creates the public media bucket, and limits browser writes to administrators.
+3. Add the Auth user to the admin allowlist. Run this separate SQL query, replacing the example email with the exact email shown in Supabase Auth:
+
+   ```sql
+   insert into public.cms_admins (user_id)
+   select id from auth.users where lower(email) = lower('YOUR_ADMIN_EMAIL')
+   on conflict (user_id) do nothing;
+   ```
+
+   It should insert one row. If it inserts zero, verify that the email matches a user in this Supabase project.
+4. In **Supabase → Project Settings → API**, copy the project URL and its public **publishable key** (or legacy `anon` key). Put them in [`supabase-config.js`](supabase-config.js):
 
    ```js
    window.SUPABASE_CONFIG = {
@@ -21,8 +30,8 @@ The page can render its bundled starter copy before Supabase is connected. The C
    };
    ```
 
-4. Commit and push `supabase-config.js` to `main` to trigger the existing Vercel deployment. The publishable/anon key is intended for browser apps, but **the service-role/secret key must never go in website code**. Security comes from the SQL policies; do not skip those steps.
-5. Open `https://thirsty-dreamer-final.vercel.app/admin.html`, sign in, edit the copy/media, and choose **Save changes** to publish. The first save publishes the included starter content into Supabase.
+5. Commit and push `supabase-config.js` to `main` to trigger the existing Vercel deployment. The publishable/anon key is intended for browser apps, but **the service-role/secret key must never go in website code**. Security comes from the SQL policies; do not skip those steps.
+6. Open `https://thirsty-dreamer-final.vercel.app/admin.html`, sign in, edit the copy/media, and choose **Save changes** to publish. The first save publishes the included starter content into Supabase.
 
 The media bucket is public-read so visitors can watch the site's videos; uploads and changes require an authenticated administrator. Resumable TUS upload is used for large files. The configured per-file limit is **50 MiB** (you can raise it in `supabase/schema.sql` if your Supabase plan and project settings allow more). Accepted formats: MP4, WebM, MOV, JPEG, PNG, WebP, and AVIF.
 
