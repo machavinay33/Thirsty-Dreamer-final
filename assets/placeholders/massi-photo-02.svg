@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800">
+<rect width="1200" height="800" fill="#2a3122"/>
+<rect x="35" y="35" width="1130" height="730" rx="18" fill="#1a1712" stroke="#b56b42" stroke-opacity=".55"/>
+<text x="600" y="365" text-anchor="middle" fill="#ece4d4" font-family="Georgia,serif" font-size="54">MASSI PHOTO 02</text>
+<text x="600" y="430" text-anchor="middle" fill="#b56b42" font-family="Arial,sans-serif" font-size="22" letter-spacing="5">REPLACE WITH CLIENT PHOTO</text>
+</svg>

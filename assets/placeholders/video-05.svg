@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720">
+<rect width="1280" height="720" fill="#17130f"/>
+<circle cx="640" cy="300" r="92" fill="#b56b42" opacity=".16"/>
+<path d="M600 340h80l-15 150h-50z" fill="#ece4d4" opacity=".18"/>
+<text x="640" y="580" text-anchor="middle" fill="#ece4d4" font-family="Georgia,serif" font-size="48">VIDEO 05</text>
+<text x="640" y="625" text-anchor="middle" fill="#b56b42" font-family="Arial,sans-serif" font-size="20" letter-spacing="4">DROP CLIENT VIDEO HERE</text>
+</svg>
