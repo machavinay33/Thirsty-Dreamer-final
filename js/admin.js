@@ -16,7 +16,7 @@
   let dirty = false;
   let allSignups = [];
   let toastTimer;
-  const visibleSections = ['navigation', 'hero', 'about', 'journal', 'essays', 'film', 'videos', 'speaking', 'social', 'collaborations', 'diners', 'contact', 'footer', 'portraits'];
+  const visibleSections = ['navigation', 'hero', 'about', 'journal', 'essays', 'film', 'videos', 'collaborations', 'diners', 'contact', 'footer', 'portraits'];
   const pretty = (key) => key.replace(/([a-z])([A-Z])/g, '$1 $2').replace(/[_-]+/g, ' ').replace(/^./, (s) => s.toUpperCase());
   const getPath = (obj, path) => path.split('.').reduce((v, k) => v?.[k], obj);
   const setPath = (obj, path, value) => {

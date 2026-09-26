@@ -45,7 +45,7 @@
     if (!data || typeof data !== 'object' || !data.copy) throw new Error('The site content is incomplete. Restore the starter content or check the Supabase record.');
     setCopy(data);
     document.title = 'Thirsty Dreamer — Massimo “Massi” Zitti';
-    const description = 'Massimo “Massi” Zitti — bartender, entrepreneur, storyteller and co-owner of Mother Cocktail Bar. A life in hospitality, fermentation and sustainability.';
+    const description = 'Massimo “Massi” Zitti — bartender, World Class coach and co-owner of Mother Cocktail Bar. A life in hospitality, fermentation and sustainability.';
     let metaDescription = $('meta[name="description"]');
     if (!metaDescription) { metaDescription = el('meta'); metaDescription.name = 'description'; document.head.append(metaDescription); }
     metaDescription.content = description;
@@ -56,7 +56,6 @@
       if (index) heroMeta.append(el('i', 'dot'));
       return item;
     }));
-    $('#biography-copy').replaceChildren(...(data.copy.about.paragraphs || []).map((text) => el('p', 'reveal', text)));
     $('#about-tags').replaceChildren(...(data.copy.about.tags || []).map((text) => el('span', 'tag', text)));
 
     const cards = $('#journal-cards');
@@ -72,8 +71,9 @@
       return card;
     }));
 
+    const availableVideos = (data.copy.videos || []).filter((video) => typeof video.url === 'string' && /^https:\/\//i.test(video.url));
     const gallery = $('#video-gallery');
-    gallery.replaceChildren(...(data.copy.videos || []).map((video, index) => {
+    gallery.replaceChildren(...availableVideos.map((video, index) => {
       const card = el('article', `video-card reveal d${(index % 4) + 1}${index === 0 ? ' featured' : ''}`);
       const frame = el('div', 'video-frame');
       const player = el('video'); player.controls = true; player.playsInline = true; player.preload = 'metadata'; player.setAttribute('aria-label', video.title || `Video ${index + 1}`);
@@ -91,33 +91,27 @@
       card.append(frame, meta); return card;
     }));
 
-    $('#portrait-one').src = data.copy.portraits?.one || 'assets/placeholders/massi-photo-01.svg';
-    $('#portrait-two').src = data.copy.portraits?.two || 'assets/placeholders/massi-photo-02.svg';
-    const speaking = $('#speaking-cards');
-    speaking.replaceChildren(...(data.copy.speaking.cards || []).map((cardData, index) => {
-      const card = el('article', `sem-card reveal d${index + 1}`);
-      card.append(el('div', 'sem-num', String(index + 1).padStart(2, '0')), el('h3', '', cardData.title), el('div', 'sem-kicker', cardData.kicker), el('p', '', cardData.body));
-      const link = el('a', 'sem-link', data.copy.speaking.cardLink || 'Ask about this topic →'); link.href = `${data.links.email}?subject=${encodeURIComponent(`Speaking enquiry: ${cardData.title}`)}`; card.append(link);
-      return card;
-    }));
-
-    const social = $('#social-cards');
-    social.replaceChildren(...(data.copy.social.cards || []).map((item, index) => {
-      const card = el('a', `ig s${(index % 6) + 1} reveal d${(index % 3) + 1}`);
-      card.href = data.links.instagram; card.target = '_blank'; card.rel = 'noopener noreferrer'; card.setAttribute('aria-label', `${item.category}: ${item.title} on Instagram`);
-      const art = el('div', 'tex'); art.setAttribute('aria-hidden', 'true'); const overlay = el('div', 'ov'); overlay.append(el('div', 'ig-cat', item.category), el('div', 'ig-t', item.title)); card.append(art, overlay); return card;
-    }));
-
-    const steps = [
-      ['A bar shaped by curiosity', 'Mother was born in 2019 from a belief that Toronto needed a different kind of cocktail bar: one led by flavour, fermentation, and genuine care for guests.'],
-      ['Rooted in Toronto', 'On Queen Street West, Mother grew from a small neighbourhood cocktail hub into an internationally recognised destination for fermentation-driven drinks.'],
-      ['Made better together', 'The collaborations, awards, and recognition matter most when they help talented people learn, grow, and enjoy the work.']
-    ];
-    $('#collaboration-points').replaceChildren(...steps.map(([title, detail], index) => {
-      const row = el('div', 'bstep'); row.append(el('div', 'bstep-n', String(index + 1).padStart(2, '0')));
-      const text = el('div', 'bstep-t'); text.append(el('div', 'h', title), el('div', 'd', detail)); row.append(text); return row;
-    }));
     $('#partner-chips').replaceChildren(...(data.copy.collaborations.partners || []).map((name) => el('span', 'chip', name)));
+
+    const portraits = data.copy.portraits || {};
+    const portraitOne = portraits.one || 'assets/placeholders/massi-photo-01.svg';
+    const portraitTwo = portraits.two || 'assets/placeholders/massi-photo-02.svg';
+    $('#portrait-one').src = portraitOne;
+    $('#portrait-two').src = portraitTwo;
+    const hasPortraits = !/placeholders\/massi-photo-0[12]\.svg$/i.test(portraitOne) || !/placeholders\/massi-photo-0[12]\.svg$/i.test(portraitTwo);
+    const hasVideos = availableVideos.length > 0;
+    const film = $('#film');
+    film.hidden = !(hasVideos || hasPortraits);
+    $('#nav-film').hidden = film.hidden;
+    $('#footer-film').hidden = film.hidden;
+    $('#portrait-strip').hidden = !hasPortraits;
+
+    const bioLink = $('#bio-read-more');
+    bioLink.addEventListener('click', () => showStory({
+      category: data.copy.about.eyebrow,
+      title: data.copy.about.title,
+      paragraphs: data.copy.about.paragraphs || []
+    }));
 
     setLink('#instagram-cta', data.links.instagram);
     setLink('#partner-cta', `${data.links.email}?subject=${encodeURIComponent('Hospitality collaboration')}`);
@@ -126,7 +120,7 @@
     setLink('#contact-instagram', data.links.instagram);
     setLink('#footer-instagram', data.links.instagram);
     setLink('#footer-email', data.links.email);
-    setLink('#mother-link', data.links.motherMap);
+    setLink('#mother-contact', data.links.motherMap);
     $('#secretEmail').placeholder = data.copy.diners.emailPlaceholder || 'you@example.com';
 
     initReveal();

@@ -4,40 +4,39 @@
       "kicker": "NEVER STOP DREAMING",
       "titleStart": "Never Stop",
       "titleAccent": "Dreaming.",
-      "intro": "A life shaped by hospitality, fermentation, sustainability, and the people who gather around a table.",
+      "intro": "A life in hospitality, shaped by fermentation, sustainability, and the people gathered around the table.",
       "meta": [
         "Toronto",
         "Hospitality",
-        "Fermentation",
-        "Dreams"
+        "Fermentation"
       ],
       "primaryCta": "Read Massi's story",
       "secondaryCta": "Get in touch",
       "scrollLabel": "Scroll"
     },
     "about": {
-      "eyebrow": "THE PERSON BEHIND THE POUR",
-      "title": "A life built around hospitality, craft, and the people in the room.",
+      "eyebrow": "ROME · MANCHESTER · TORONTO",
+      "title": "A life built around hospitality.",
       "paragraphs": [
-        "My journey in hospitality began in the heart of Rome. At 13, I became captivated by the guitar while helping my mother at her fish stand. A year later, I stepped into the busy bar culture of Via Serpenti, making cappuccinos every day. The work taught me discipline and a strong work ethic.",
-        "By 15, I was making aperitivi and learning what hospitality could mean: making every guest feel valued. At 18, I moved to the United Kingdom, where I learned to live alone and manage my own finances. I kept working my way up, eventually becoming a group bar manager in Manchester and an active competitor in the cocktail scene.",
-        "That drive brought me to Toronto, where I co-founded Mother Cocktail Bar. We built a place around fermentation, thoughtful drinks, and honest, humble service. In 2022, I was named Canada's World Class Bartender of the Year. I later coached two global winners in the same competition, in 2023 and 2024.",
-        "Over the past four years, I've had the honour of travelling to many countries to share my love of hospitality, cocktail-making, and fermentation. My story is about craftsmanship, resilience, and believing that the journey—and the company we keep—matters as much as the destination."
+        "My journey in the bar scene began in Rome, where I balanced childhood dreams with hard work. At 13, I became captivated by the guitar while helping my mother at her fish stand. At 14, I stepped into the busy bar culture of Via Serpenti, making cappuccinos every day. The work taught me discipline and a strong work ethic.",
+        "At 15, I was making aperitivi and learning to make guests feel valued. At 18, I moved to the United Kingdom, learned to live independently, and worked my way up to group bar manager in Manchester while competing in the cocktail scene.",
+        "My journey brought me to Toronto and Mother Cocktail Bar, which I co-own. We put fermentation, innovative cocktails, and honest, humble guest service at the heart of what we do. I was named Canada’s World Class Bartender of the Year in 2022, ICCO Best Cocktail Bartender in 2023, and Canada’s official World Class Coach in 2023 and 2024—leading Canada to the World Title both years.",
+        "Over the past four years, I have travelled to many countries to share my love of hospitality, cocktail-making, and fermentation. My story is one of craftsmanship and resilience—and a belief that the journey and the company matter as much as the destination."
       ],
       "quote": "“I train like I’ve never won, and I compete like I’ve never lost.” — Eileen Gu",
       "tags": [
-        "Bartender",
-        "Entrepreneur",
-        "Storyteller",
-        "Hospitality",
-        "Fermentation"
-      ]
+        "World Class Bartender · Canada 2022",
+        "ICCO Best Cocktail Bartender · 2023",
+        "Canada World Class Coach · 2023–24"
+      ],
+      "summary": "From the bars of Rome to co-owning Mother Cocktail Bar in Toronto, Massi’s journey is built around craft, resilience, and making every guest feel valued.",
+      "readMore": "Read the full story"
     },
     "journal": {
-      "eyebrow": "THE DREAM JOURNAL",
-      "titleStart": "Stories, Ideas",
-      "titleAccent": "& Experiments",
-      "intro": "The ideas that shape my work: fermentation as a way of life, sustainability that begins with people, memorable shared tables, and the community built at Mother Cocktail Bar.",
+      "eyebrow": "FERMENTATION · SUSTAINABILITY · COMMUNITY",
+      "titleStart": "Stories",
+      "titleAccent": "from the journey",
+      "intro": "Fermentation, sustainable living, a table full of surprises, and the people at Mother Cocktail Bar.",
       "signupLabel": "A note from behind the bar",
       "signupCopy": "Occasional stories on hospitality, fermentation, and the people who make it meaningful.",
       "signupButton": "Join the journal",
@@ -48,10 +47,10 @@
       {
         "id": "fermentation",
         "category": "Fermentation",
-        "title": "Fermentation is a way of thinking",
+        "title": "A way of life",
         "paragraphs": [
-          "Many people see fermentation as a preserving technique developed by our ancestors to help them survive. I see it as much more: a way of life that deepens our understanding of how food and drink are made.",
-          "There is something incredible about creating something from scratch, with love and care at every step. Think of bread, koji, or kombucha: simple ingredients such as grain, rice, or sweet tea become warm loaves, layers of flavour, and lively bubbles. That transformation still sparks my curiosity, and I have not regretted a second of this journey."
+          "Many people see fermentation as a preserving technique our ancestors developed to survive. I see it as much more: a way of life that deepens our understanding of how food and drink are made.",
+          "There is something incredible about creating from scratch, with love and care at every step. Think of bread, koji, or kombucha: simple grains, rice, or sweet tea become warm loaves, layers of flavour, and lively bubbles. That process sparks my curiosity—and I have not regretted a second of this journey."
         ]
       },
       {
@@ -59,29 +58,30 @@
         "category": "Sustainability",
         "title": "Sustain yourself first",
         "paragraphs": [
-          "Sustainability is often repeated in many forms, sometimes with the focus on reusing rather than preventing waste. We each approach it differently. My own principle is simple: “If you cannot sustain yourself, it’s unlikely you will sustain the people around you.”",
-          "Your body, your mind, your surroundings, and especially your time are essential to living sustainably and sharing that practice with others. That message can take root in your community, reach other communities, and become a chain of more sustainable living on our planet."
+          "Sustainability is often discussed as reusing, instead of first preventing waste. Each of us has a different approach. Mine is simple: “If you cannot sustain yourself, it’s unlikely you will sustain the people around you.”",
+          "Your body, mind, surroundings, and especially your time are essential to living sustainably and sharing that practice. The message can take root in your community, reach others, and help create a chain of more sustainable living on our planet."
         ]
       },
       {
         "id": "secret-diners-story",
         "category": "Secret Diners",
-        "title": "An unexpected menu, a shared table",
+        "title": "The menu is a secret",
         "paragraphs": [
-          "Before opening Mother Cocktail Bar, I had a professional dream: to work with chefs on food and cocktail pairings. When things did not go to plan, I started a side project built around culinary events where food and cocktails could come together.",
-          "I wondered what would happen if guests did not know the menu until they sat down. It would make the experience more challenging, mysterious, and personal. That idea gave the series its name: SECRET DINERS.",
-          "After almost 35 events, we brought the dinner series into restaurants, bars, and art galleries. I had the privilege of collaborating with many talented chefs. What began as a joke became one of the things I am proudest of professionally."
+          "Before opening Mother Cocktail Bar, I dreamed of collaborating with chefs on food-and-cocktail pairings. When that did not go to plan, I started a side project bringing food and cocktails together in culinary events.",
+          "What if guests did not know the menu until they sat down? The mystery made the experience more challenging and personal. That idea gave the series its name: SECRET DINERS.",
+          "After almost 35 events, we brought the dinners to restaurants, bars, and art galleries, collaborating with talented chefs. What began as a joke became one of the projects I am proudest of professionally."
         ]
       },
       {
         "id": "mother",
         "category": "Mother Cocktail Bar",
-        "title": "A fermentation-led bar in Toronto",
+        "title": "A new wave of cocktail-making",
         "paragraphs": [
-          "Mother Cocktail Bar is on Queen Street West in Toronto. Co-owned by bartender and bar operator Massimo Zitti, it is a place for innovative, fermentation-driven cocktails, sustainability, and humble guest service. Mother was named No. 7 on Canada's Best 100 in 2023 and No. 37 in North America's 50 Best Bars.",
-          "Mother began in 2019 with a group of like-minded people who felt Toronto needed something new. Over time, the small Queen Street cocktail bar grew into an internationally recognised destination for a new wave of cocktail-making, flavour discovery, and fermentation.",
-          "What makes me proudest is seeing staff and guests enjoy themselves, care for one another during service, and watching talented young professionals grow in their craft.",
-          "Mother has had the honour of collaborating with wonderful establishments, including Handshake Speakeasy (Mexico City), Overstory (New York City), Odd Couple (Shanghai), Passing Fancies (United Kingdom), Double Chicken Please, Gokan, Punch Room at Edition Hotel Tokyo, Nutmeg & Clove, and many others."
+          "Co-owned by bartender and bar operator Massimo Zitti, Mother Cocktail Bar is on Queen Street West in Toronto. It is a destination for innovative, fermentation-driven cocktails where hospitality meets sustainability and humble guest service. Mother ranked No. 7 on Canada’s Best 100 in 2023 and No. 37 on North America’s 50 Best Bars.",
+          "Mother began in 2019 with like-minded people who believed Toronto needed something new and different. Over time, this small cocktail bar became an internationally recognised destination for a new wave of cocktail-making, avant-garde drink techniques, and flavour discovery.",
+          "What makes Massi proudest is seeing staff and guests enjoy themselves, respect one another during service, and watching talented young professionals grow in their craft.",
+          "Mother has collaborated with Handshake Speakeasy (Mexico City), Overstory (New York), Odd Couple (Shanghai), Passing Fancies (UK), Double Chicken Please, Gokan, Punch Room at Edition Hotel Tokyo, Nutmeg & Clove, and many others.",
+          "Massimo’s milestones: Canada World Class Bartender of the Year (2022); ICCO Best Cocktail Bartender (2023); and Canada’s official World Class Coach (2023 and 2024), leading Canada to win the World Title both years."
         ]
       }
     ],
@@ -134,70 +134,10 @@
         "url": ""
       }
     ],
-    "speaking": {
-      "eyebrow": "CRAFT, COMPETITION & COMMUNITY",
-      "title": "A journey worth sharing",
-      "intro": "From the bar in Rome to Toronto and beyond, Massi's work has grown through craft, competition, coaching, and the people he has met along the way.",
-      "cards": [
-        {
-          "title": "The craft",
-          "kicker": "Cocktails · Fermentation · Hospitality",
-          "body": "A lifelong practice of making drinks with care and making guests feel valued—from the first cappuccino to fermentation-led cocktails."
-        },
-        {
-          "title": "Awards and milestones",
-          "kicker": "Canada World Class Bartender of the Year · 2022 · ICCO Best Cocktail Bartender · 2023",
-          "body": "Two career milestones built on persistence, curiosity, and a commitment to the craft."
-        },
-        {
-          "title": "The coaching",
-          "kicker": "Canada's World Class Coach · 2023 & 2024",
-          "body": "Proud to coach two global winners in the competition and help Canada's team reach the World Title in both years."
-        }
-      ],
-      "footer": "For speaking, coaching, and hospitality enquiries, get in touch.",
-      "cardLink": "Ask about this topic →",
-      "contactLink": "Contact Massi →"
-    },
-    "social": {
-      "eyebrow": "FOLLOW THE JOURNEY",
-      "title": "The dream keeps moving.",
-      "stat": "@thirstydreamer",
-      "label": "Instagram",
-      "cards": [
-        {
-          "category": "Fermentation",
-          "title": "Curiosity, culture, and creation"
-        },
-        {
-          "category": "Cocktail craft",
-          "title": "The care behind every drink"
-        },
-        {
-          "category": "Hospitality",
-          "title": "Making every guest feel valued"
-        },
-        {
-          "category": "Secret Diners",
-          "title": "Food and cocktails at one table"
-        },
-        {
-          "category": "Mother Cocktail Bar",
-          "title": "A new wave of cocktail-making"
-        },
-        {
-          "category": "On the road",
-          "title": "Sharing the love of hospitality"
-        }
-      ],
-      "ctaLabel": "Follow @thirstydreamer"
-    },
     "collaborations": {
-      "eyebrow": "A COMMUNITY OF CRAFT",
-      "title": "Good work is shared.",
-      "intro": "Mother Cocktail Bar has had the honour of collaborating with thoughtful bars and hospitality teams around the world. A shared curiosity for people, flavour, and craft is what brings us together.",
-      "panelTitle": "Across cities, around tables.",
-      "panelText": "From Toronto to Mexico City, New York, Shanghai, Tokyo, and beyond, every collaboration is a chance to learn from people who care about hospitality.",
+      "eyebrow": "MOTHER COCKTAIL BAR · TORONTO",
+      "title": "A new wave of cocktail-making.",
+      "intro": "Co-owned by Massimo Zitti, Mother began in 2019 on Queen Street West. It is a top-ranked Toronto bar for fermentation-driven cocktails, sustainable hospitality, and humble guest service.",
       "partners": [
         "Handshake Speakeasy · Mexico City",
         "Overstory · New York City",
@@ -210,9 +150,9 @@
         "And many others"
       ],
       "networkLabel": "A few places we've shared a table with",
-      "ctaLabel": "Start a conversation",
-      "motherLabel": "Mother Cocktail Bar",
-      "motherDetail": "Queen Street West · Toronto"
+      "ctaLabel": "Find Mother Cocktail Bar",
+      "rankCanada": "No. 7 · Canada’s Best 100 · 2023",
+      "rankNorthAmerica": "No. 37 · North America’s 50 Best Bars"
     },
     "diners": {
       "eyebrow": "SECRET DINERS",
@@ -254,8 +194,8 @@
       "two": "assets/placeholders/massi-photo-02.svg"
     },
     "navigation": {
-      "about": "About",
-      "journal": "Journal",
+      "about": "Story",
+      "journal": "Stories",
       "film": "Films",
       "speaking": "Craft",
       "mother": "Mother",
