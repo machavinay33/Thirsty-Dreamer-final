@@ -4,206 +4,466 @@
   const CONFIG = window.SUPABASE_CONFIG || {};
   const SUPABASE_URL = (CONFIG.url || '').trim().replace(/\/$/, '');
   const SUPABASE_KEY = (CONFIG.anonKey || '').trim();
-  const hasSupabase = Boolean(SUPABASE_URL.startsWith('https://') && SUPABASE_KEY && !SUPABASE_URL.includes('YOUR_PROJECT'));
-  const db = hasSupabase && window.supabase?.createClient
-    ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, { auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true } })
-    : null;
-
+  const configured = /^https:\/\//i.test(SUPABASE_URL) && SUPABASE_KEY && !SUPABASE_URL.includes('YOUR_PROJECT');
+  const db = configured && window.supabase?.createClient
+    ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
+      auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true }
+    }) : null;
   const $ = (selector, root = document) => root.querySelector(selector);
   const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
-  const get = (object, path) => path.split('.').reduce((value, key) => value == null ? undefined : value[key], object);
-  const setCopy = (data) => $$('[data-copy]').forEach((el) => {
-    const value = get(data.copy, el.dataset.copy);
-    if (typeof value === 'string') el.textContent = value;
-  });
-  const el = (tag, className, text) => {
-    const node = document.createElement(tag);
-    if (className) node.className = className;
-    if (text != null) node.textContent = text;
-    return node;
-  };
-
+  const path = (object, key) => key.split('.').reduce((value, part) => value == null ? undefined : value[part], object);
+  let siteData;
+  let revealObserver;
   let toastTimer;
+
   function toast(message) {
-    const node = $('#toast');
-    if (!node) return;
-    node.textContent = message;
-    node.classList.add('show');
+    const box = $('#toast');
+    const label = $('#toastMsg');
+    if (!box || !label) return;
+    label.textContent = message;
+    box.classList.add('show');
     clearTimeout(toastTimer);
-    toastTimer = setTimeout(() => node.classList.remove('show'), 4200);
+    toastTimer = setTimeout(() => box.classList.remove('show'), 4000);
   }
 
-  function setLink(selector, href) {
+  function setText(selector, value, root = document) {
+    const node = $(selector, root);
+    if (node && typeof value === 'string') node.textContent = value;
+    return node;
+  }
+
+  function safeExternal(url) {
+    return typeof url === 'string' && /^https:\/\//i.test(url.trim()) ? url.trim() : '';
+  }
+
+  function setExternalLink(selector, url) {
     const node = $(selector);
-    if (!node || typeof href !== 'string') return;
-    const safe = /^(https?:\/\/|mailto:|tel:)/i.test(href.trim());
-    if (safe) node.href = href;
-    else node.removeAttribute('href');
-  }
-
-  function applySiteData(data) {
-    if (!data || typeof data !== 'object' || !data.copy) throw new Error('The site content is incomplete. Restore the starter content or check the Supabase record.');
-    setCopy(data);
-    document.title = 'Thirsty Dreamer — Massimo “Massi” Zitti';
-    const description = 'Massimo “Massi” Zitti — bartender, World Class coach and co-owner of Mother Cocktail Bar. A life in hospitality, fermentation and sustainability.';
-    let metaDescription = $('meta[name="description"]');
-    if (!metaDescription) { metaDescription = el('meta'); metaDescription.name = 'description'; document.head.append(metaDescription); }
-    metaDescription.content = description;
-
-    const heroMeta = $('#hero-meta');
-    heroMeta.replaceChildren(...(data.copy.hero.meta || []).map((value, index) => {
-      const item = el('span', '', value);
-      if (index) heroMeta.append(el('i', 'dot'));
-      return item;
-    }));
-    $('#about-tags').replaceChildren(...(data.copy.about.tags || []).map((text) => el('span', 'tag', text)));
-
-    const cards = $('#journal-cards');
-    cards.replaceChildren(...(data.copy.essays || []).map((essay, index) => {
-      const card = el('article', `article a${(index % 4) + 1} reveal d${(index % 4) + 1}`);
-      card.tabIndex = 0; card.setAttribute('role', 'button'); card.setAttribute('aria-label', `Read ${essay.title}`);
-      const image = el('div', 'article-img');
-      const artwork = el('div', 'tex'); artwork.setAttribute('aria-hidden', 'true'); image.append(artwork, el('span', 'article-num', String(index + 1).padStart(2, '0')));
-      const body = el('div', 'article-body'); body.append(el('div', 'article-cat', essay.category), el('h3', '', essay.title));
-      const read = el('div', 'read', get(data.copy, 'journal.readMore') || 'Read the story →'); body.append(read); card.append(image, body);
-      card.addEventListener('click', () => showStory(essay));
-      card.addEventListener('keydown', (event) => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); showStory(essay); } });
-      return card;
-    }));
-
-    const availableVideos = (data.copy.videos || []).filter((video) => typeof video.url === 'string' && /^https:\/\//i.test(video.url));
-    const gallery = $('#video-gallery');
-    gallery.replaceChildren(...availableVideos.map((video, index) => {
-      const card = el('article', `video-card reveal d${(index % 4) + 1}${index === 0 ? ' featured' : ''}`);
-      const frame = el('div', 'video-frame');
-      const player = el('video'); player.controls = true; player.playsInline = true; player.preload = 'metadata'; player.setAttribute('aria-label', video.title || `Video ${index + 1}`);
-      if (video.poster && /^https?:\/\//i.test(video.poster)) player.poster = video.poster;
-      if (video.url && /^https?:\/\//i.test(video.url)) {
-        const source = el('source'); source.src = video.url;
-        const suffix = video.url.split(/[?#]/)[0].toLowerCase();
-        source.type = suffix.endsWith('.webm') ? 'video/webm' : (suffix.endsWith('.mov') ? 'video/quicktime' : 'video/mp4');
-        player.append(source); frame.classList.add('video-ready');
-      }
-      const missing = el('div', 'video-missing', video.url ? '' : (get(data.copy, 'film.videoPlaceholder') || 'Video coming soon'));
-      const number = el('span', 'video-num', String(index + 1).padStart(2, '0'));
-      frame.append(player, missing, number);
-      const meta = el('div', 'video-meta'); meta.append(el('span', '', video.category || 'Thirsty Dreamer'), el('h3', '', video.title || `Film ${index + 1}`));
-      card.append(frame, meta); return card;
-    }));
-
-    $('#partner-chips').replaceChildren(...(data.copy.collaborations.partners || []).map((name) => el('span', 'chip', name)));
-
-    const portraits = data.copy.portraits || {};
-    const portraitOne = portraits.one || 'assets/placeholders/massi-photo-01.svg';
-    const portraitTwo = portraits.two || 'assets/placeholders/massi-photo-02.svg';
-    $('#portrait-one').src = portraitOne;
-    $('#portrait-two').src = portraitTwo;
-    const hasPortraits = !/placeholders\/massi-photo-0[12]\.svg$/i.test(portraitOne) || !/placeholders\/massi-photo-0[12]\.svg$/i.test(portraitTwo);
-    const hasVideos = availableVideos.length > 0;
-    const film = $('#film');
-    film.hidden = !(hasVideos || hasPortraits);
-    $('#nav-film').hidden = film.hidden;
-    $('#footer-film').hidden = film.hidden;
-    $('#portrait-strip').hidden = !hasPortraits;
-
-    const bioLink = $('#bio-read-more');
-    bioLink.addEventListener('click', () => showStory({
-      category: data.copy.about.eyebrow,
-      title: data.copy.about.title,
-      paragraphs: data.copy.about.paragraphs || []
-    }));
-
-    setLink('#instagram-cta', data.links.instagram);
-    setLink('#partner-cta', `${data.links.email}?subject=${encodeURIComponent('Hospitality collaboration')}`);
-    setLink('#contact-email', data.links.email);
-    setLink('#contact-phone', data.links.phone);
-    setLink('#contact-instagram', data.links.instagram);
-    setLink('#footer-instagram', data.links.instagram);
-    setLink('#footer-email', data.links.email);
-    setLink('#mother-contact', data.links.motherMap);
-    $('#secretEmail').placeholder = data.copy.diners.emailPlaceholder || 'you@example.com';
-
-    initReveal();
+    const safe = safeExternal(url);
+    if (!node) return;
+    if (safe) {
+      node.href = safe;
+      node.target = '_blank';
+      node.rel = 'noopener noreferrer';
+    } else {
+      node.removeAttribute('href');
+    }
   }
 
   function showStory(story) {
     const dialog = $('#story-dialog');
-    $('#story-category').textContent = story.category || '';
-    $('#story-title').textContent = story.title || '';
-    const body = $('#story-body');
-    body.replaceChildren(...(story.paragraphs || []).map((paragraph) => el('p', '', paragraph)));
+    if (!dialog || !story) return;
+    setText('#story-category', story.category || 'The Dream Journal');
+    setText('#story-title', story.title || 'A story from behind the bar');
+    const content = $('#story-body');
+    content.replaceChildren(...(Array.isArray(story.paragraphs) ? story.paragraphs : []).map((text) => {
+      const paragraph = document.createElement('p');
+      paragraph.textContent = text;
+      return paragraph;
+    }));
     if (typeof dialog.showModal === 'function') dialog.showModal();
-    else { dialog.setAttribute('open', ''); dialog.hidden = false; }
+    else dialog.setAttribute('open', '');
   }
 
-  function initReveal() {
-    const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (reduceMotion || !('IntersectionObserver' in window)) { $$('.reveal').forEach((node) => node.classList.add('in')); return; }
-    const observer = new IntersectionObserver((entries) => entries.forEach((entry) => {
+  function makeStoryCard(node, card, index, essay) {
+    node.dataset.storyIndex = String(index);
+    node.setAttribute('aria-label', `Read ${card.title}`);
+    const category = $('.article-cat', node);
+    const title = $('h3', node);
+    const read = $('.read', node);
+    if (category) category.textContent = card.category;
+    if (title) title.textContent = card.title;
+    if (read) read.textContent = siteData.copy.journal.readMore || 'Read the journal →';
+    const open = () => showStory({ category: card.category, title: card.title, paragraphs: essay.paragraphs });
+    node.addEventListener('click', open);
+    node.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); open(); }
+    });
+  }
+
+  function makeTags(tags) {
+    const parent = $('#about .tags');
+    if (!parent) return;
+    const colors = ['clay', '', 'moss', '', ''];
+    parent.replaceChildren(...tags.map((text, index) => {
+      const chip = document.createElement('span');
+      chip.className = `tag${colors[index] ? ` ${colors[index]}` : ''}`;
+      chip.textContent = text;
+      return chip;
+    }));
+  }
+
+  function renderSite(data) {
+    if (!data?.copy) throw new Error('The website copy is missing. Check the starter content or Supabase site record.');
+    siteData = data;
+    const copy = data.copy;
+    const hero = copy.hero || {};
+    const heroTitle = $('#top h1');
+    if (heroTitle) {
+      const accent = $('.l2', heroTitle);
+      heroTitle.firstChild && heroTitle.firstChild.nodeType === Node.TEXT_NODE
+        ? heroTitle.firstChild.textContent = `${hero.titleStart || ''} `
+        : heroTitle.insertBefore(document.createTextNode(`${hero.titleStart || ''} `), accent);
+      if (accent) accent.textContent = hero.titleAccent || '';
+    }
+    setText('.hero-never', hero.kicker);
+    setText('.hero-intro', hero.intro);
+    const heroActions = $$('#top button');
+    if (heroActions[0]) heroActions[0].textContent = `${hero.primaryCta || 'Read the Dream'} →`;
+    if (heroActions[1]) heroActions[1].textContent = hero.secondaryCta || 'Get in touch';
+    const meta = $('#top .hero-meta');
+    if (meta) {
+      meta.replaceChildren(...(hero.meta || []).flatMap((text, index) => {
+        const label = document.createElement('span'); label.textContent = text;
+        return index ? [Object.assign(document.createElement('i'), { className: 'dot', 'aria-hidden': 'true' }), label] : [label];
+      }));
+    }
+
+    const about = copy.about || {};
+    setText('#about .eyebrow', about.eyebrow);
+    setText('#about h2', about.title);
+    setText('#about .about-quote', about.displayQuote || about.quote);
+    const aboutCopy = $('#about .about-copy');
+    if (aboutCopy) {
+      const oldParagraphs = $$('.about-copy > p:not(.about-quote)', aboutCopy);
+      const insertionPoint = oldParagraphs[0] || $('.tags', aboutCopy);
+      oldParagraphs.forEach((p) => p.remove());
+      (about.paragraphs || []).forEach((text, index) => {
+        const paragraph = document.createElement('p');
+        paragraph.className = `reveal d${Math.min(index + 1, 4)}`;
+        paragraph.textContent = text;
+        aboutCopy.insertBefore(paragraph, $('.tags', aboutCopy));
+      });
+      if (insertionPoint && !insertionPoint.isConnected && !$('.tags', aboutCopy)) aboutCopy.append(insertionPoint);
+    }
+    makeTags(about.tags || []);
+    renderMedia(data);
+
+    const journal = copy.journal || {};
+    setText('#blog .eyebrow', journal.eyebrow);
+    const journalTitle = $('#blog .news-head h2');
+    if (journalTitle) {
+      journalTitle.replaceChildren(document.createTextNode(`${journal.titleStart || 'The Dream Come True'} `));
+      const accent = document.createElement('span'); accent.className = 'clay'; accent.textContent = journal.titleAccent || 'Journal';
+      journalTitle.append(accent);
+    }
+    setText('#blog .news-sub', journal.intro);
+    const journalForm = $('#journal-form');
+    if (journalForm) {
+      setText('.sl', journal.signupLabel, journalForm);
+      setText('.sp', journal.signupCopy, journalForm);
+      const email = $('input[type="email"]', journalForm);
+      if (email) email.placeholder = journal.emailPlaceholder || 'you@example.com';
+      const label = $('.signup-consent span', journalForm);
+      if (label) label.textContent = journal.signupConsent || 'I agree to receive occasional Thirsty Dreamer emails.';
+      const submit = $('button[type="submit"]', journalForm);
+      if (submit) submit.textContent = journal.signupButton || 'Join the journal';
+    }
+    const essays = copy.essays || [];
+    const cards = journal.cards || [];
+    $$('#journal-cards .article').forEach((node, index) => {
+      const item = cards[index];
+      if (!item) { node.hidden = true; return; }
+      const essay = item.storyId === 'about'
+        ? { category: about.eyebrow, paragraphs: about.paragraphs }
+        : essays.find((story) => story.id === item.storyId) || essays[index];
+      if (!essay) { node.hidden = true; return; }
+      node.hidden = false;
+      makeStoryCard(node, item, index, essay);
+    });
+
+    const speaking = copy.speaking || {};
+    setText('#seminars .eyebrow', speaking.eyebrow);
+    setText('#seminars h2', speaking.title);
+    setText('#seminars > .wrap > p', speaking.intro);
+    $$('#seminar-cards .sem-card').forEach((card, index) => {
+      const item = speaking.cards?.[index];
+      if (!item) { card.hidden = true; return; }
+      card.hidden = false;
+      setText('h3', item.title, card); setText('.sem-kicker', item.kicker, card); setText('p', item.body, card);
+      setText('.sem-link', 'Request this seminar →', card);
+    });
+    const seminarFoot = $('#seminars .sem-foot');
+    if (seminarFoot && speaking.footer) {
+      const link = $('span', seminarFoot);
+      seminarFoot.firstChild.textContent = speaking.footer;
+      if (link) link.textContent = speaking.checkAvailability || 'Check availability →';
+    }
+
+    const social = copy.social || {};
+    setText('#social .eyebrow', social.eyebrow); setText('#social .social-head h2', social.title);
+    setText('#social .followers .big', social.followers); setText('#social .followers .lab', social.handle);
+    $$('#social-cards .ig').forEach((card, index) => {
+      const item = social.cards?.[index];
+      if (!item) { card.hidden = true; return; }
+      card.hidden = false; setText('.ig-cat', item.category, card); setText('.ig-t', item.title, card); setText('.views', item.views, card);
+      card.dataset.topic = item.topic || '';
+    });
+    const socialButton = $('#instagram-cta');
+    if (socialButton) socialButton.textContent = social.button || 'Follow @thirstydreamer →';
+
+    const brand = copy.brand || {};
+    setText('#partner .eyebrow', brand.eyebrow); setText('#partner h2', brand.title);
+    const paragraphs = $$('#partner .brand-copy > p');
+    if (paragraphs[0]) paragraphs[0].textContent = brand.intro || '';
+    if (paragraphs[1]) paragraphs[1].textContent = brand.subintro || '';
+    setText('#partner .reel-sponsor', brand.reelSponsor);
+    const reelIcos = $$('#partner .reel-side .ico');
+    [brand.reelViews, brand.reelComments, brand.reelLikes].forEach((text, i) => { if (reelIcos[i]) reelIcos[i].textContent = text || ''; });
+    setText('#partner .reel-cap', brand.reelCaption); setText('#partner .reel-tag', brand.reelTags);
+    $$('#partner .brand-steps .bstep').forEach((step, index) => {
+      const item = brand.steps?.[index]; if (!item) { step.hidden = true; return; }
+      step.hidden = false; setText('.bstep-t .h', item.title, step); setText('.bstep-t .d', item.description, step);
+    });
+    setText('#partner .brand-logos .lbl', brand.typesLabel);
+    $$('#partner .brand-logos .bchip').forEach((node, index) => { if (brand.types?.[index]) node.textContent = brand.types[index]; });
+    if ($('#partner .brand-logos')) $$('#partner .brand-logos .bchip').slice((brand.types || []).length).forEach((node) => node.remove());
+    const partnerButton = $('#partner-cta'); if (partnerButton) partnerButton.textContent = brand.button || 'Start a partnership →';
+    setText('#partner .brand-rate', brand.rate);
+
+    const diners = copy.diners || {};
+    setText('#secret .eyebrow', diners.eyebrow); setText('#secret h2', diners.title);
+    setText('#secret .secret-copy', diners.intro); setText('#secret .secret-sub', diners.sub);
+    setText('#secret .secret-meta', diners.meta);
+    const dinersForm = $('#diners-form');
+    if (dinersForm) {
+      const email = $('input[type="email"]', dinersForm); if (email) email.placeholder = diners.emailPlaceholder || 'you@example.com';
+      const button = $('button[type="submit"]', dinersForm); if (button) button.textContent = diners.submitLabel || 'Join the waitlist';
+    }
+
+    const contact = copy.contact || {};
+    setText('#contact .eyebrow', contact.eyebrow); setText('#contact h2', contact.title);
+    setText('#contact .contact-lead', contact.intro); setText('#contact .contact-sign', contact.signoff);
+    setText('#contact .contact-dream', contact.dream);
+    setText('.contact-form-title', contact.formTitle); setText('.contact-form-intro', contact.formIntro);
+    $$('.form-field label').forEach((node) => {
+      const map = { 'inquiry-name': contact.nameLabel, 'inquiry-email': contact.emailLabel,
+        'inquiry-phone': contact.phoneLabel, 'inquiry-kind': contact.kindLabel, 'inquiry-message': contact.messageLabel };
+      const id = node.htmlFor;
+      if (map[id]) node.textContent = `${map[id]} *`;
+    });
+    setText('.form-consent span', contact.consent); setText('.inquiry-submit', `${contact.submitLabel || 'Send inquiry'} →`);
+    const booking = $('.booking-list');
+    if (booking) {
+      $$('.booking-list .booking').forEach((node, index) => {
+        const item = contact.bookingCards?.[index]; if (!item) { node.hidden = true; return; }
+        node.hidden = false; setText('.bt', item.title, node); setText('.bd', item.detail, node); node.dataset.inquiryType = item.kind;
+      });
+    }
+
+    const footer = copy.footer || {};
+    setText('.foot-never', footer.tagline);
+    const footerLinks = $$('.foot-links a');
+    const labels = [footer.linkAbout, footer.linkSpeaking, footer.linkJournal, footer.linkDiners, footer.linkContact];
+    footerLinks.forEach((node, index) => { if (labels[index]) node.textContent = labels[index]; });
+    const bottom = $('.foot-bottom p');
+    if (bottom) bottom.textContent = footer.copyright || '© 2026 Thirsty Dreamer · Massimo Zitti · Toronto';
+
+    setExternalLink('#instagram-cta', data.links?.instagram);
+    setExternalLink('#footer-instagram', data.links?.instagram);
+    setExternalLink('#mother-contact', data.links?.motherMap);
+    document.title = 'Thirsty Dreamer — Massimo “Massi” Zitti';
+    initialiseReveal();
+  }
+
+  async function loadContent() {
+    const response = await fetch('content.json', { cache: 'no-store' });
+    if (!response.ok) throw new Error('Could not load the website starter content. Please refresh and try again.');
+    const starter = await response.json();
+    if (!db) return starter;
+    const { data, error } = await db.from('site_content').select('content').eq('page_id', 'home').maybeSingle();
+    if (error) { console.warn('Using starter copy after the Supabase content lookup failed:', error.message); return starter; }
+    return data?.content || starter;
+  }
+
+  function renderMedia(data) {
+    const section = $('#film-gallery');
+    const copy = data.copy || {};
+    const film = copy.film || {};
+    if (section) {
+      setText('#film-eyebrow', film.eyebrow || 'In motion');
+      setText('#film-title', `${film.titleStart || 'The dream,'} ${film.titleAccent || 'in motion.'}`);
+      setText('#film-intro', film.intro || 'Films from behind the bar, the fermentation process, and the people who make it happen.');
+      const videos = (copy.videos || []).filter((item) => typeof item.url === 'string' && item.url.trim());
+      const cards = $('#film-cards');
+      if (cards) cards.replaceChildren(...videos.map((item) => {
+        const card = document.createElement('article'); card.className = 'film-card';
+        const source = item.url.trim();
+        const isLocal = /^assets\/[\w./-]+$/i.test(source);
+        const isHttps = /^https:\/\//i.test(source);
+        if (!isHttps && !isLocal) return card;
+        const isVideo = /\.(mp4|webm|mov)(?:[?#].*)?$/i.test(source);
+        if (isVideo) {
+          const video = document.createElement('video'); video.controls = true; video.preload = 'metadata'; video.playsInline = true;
+          video.src = source;
+          if (typeof item.poster === 'string' && (/^https:\/\//i.test(item.poster) || /^assets\/[\w./-]+$/i.test(item.poster))) video.poster = item.poster;
+          card.append(video);
+        } else {
+          const preview = document.createElement('a'); preview.className = 'film-preview'; preview.href = source;
+          preview.target = '_blank'; preview.rel = 'noopener noreferrer'; preview.textContent = 'Open film ↗'; card.append(preview);
+        }
+        const label = document.createElement('div'); label.className = 'film-copy';
+        const category = document.createElement('span'); category.textContent = item.category || 'Film';
+        const title = document.createElement('h3'); title.textContent = item.title || 'A story in motion';
+        label.append(category, title); card.append(label); return card;
+      }));
+      section.hidden = !videos.length;
+    }
+    const imageSource = copy.portraits?.one || '';
+    if (imageSource && !imageSource.includes('placeholders/')) {
+      const holder = $('.hero-visual .portrait-main');
+      if (holder && (/^https:\/\//i.test(imageSource) || /^assets\/[\w./-]+$/i.test(imageSource))) {
+        let portrait = $('.cms-portrait', holder);
+        if (!portrait) { portrait = document.createElement('img'); portrait.className = 'cms-portrait'; portrait.alt = 'Massi behind the bar'; holder.append(portrait); }
+        portrait.src = imageSource;
+      }
+    }
+  }
+
+  function initialiseReveal() {
+    const nodes = $$('.reveal:not(.in)');
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches || !('IntersectionObserver' in window)) {
+      nodes.forEach((node) => node.classList.add('in')); return;
+    }
+    if (revealObserver) revealObserver.disconnect();
+    revealObserver = new IntersectionObserver((entries, observer) => entries.forEach((entry) => {
       if (entry.isIntersecting) { entry.target.classList.add('in'); observer.unobserve(entry.target); }
     }), { threshold: 0.08, rootMargin: '0px 0px -5% 0px' });
-    $$('.reveal:not(.in)').forEach((node) => observer.observe(node));
+    nodes.forEach((node) => revealObserver.observe(node));
+  }
+
+  function setInquiryType(type) {
+    const select = $('#inquiry-kind');
+    if (select && [...select.options].some((option) => option.value === type)) select.value = type;
   }
 
   function setupNavigation() {
     const nav = $('#nav'); const burger = $('#burger');
-    const syncScroll = () => nav.classList.toggle('solid', scrollY > 40);
-    addEventListener('scroll', syncScroll, { passive: true }); syncScroll();
-    burger.addEventListener('click', () => {
-      const opened = burger.getAttribute('aria-expanded') === 'true';
-      burger.setAttribute('aria-expanded', String(!opened)); burger.setAttribute('aria-label', opened ? 'Open menu' : 'Close menu');
-      nav.classList.toggle('menu-open', !opened);
+    const sync = () => nav?.classList.toggle('solid', scrollY > 40);
+    addEventListener('scroll', sync, { passive: true }); sync();
+    burger?.addEventListener('click', () => {
+      const open = burger.getAttribute('aria-expanded') !== 'true';
+      burger.setAttribute('aria-expanded', String(open)); burger.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+      nav?.classList.toggle('menu-open', open);
     });
-    $$('#site-menu a').forEach((link) => link.addEventListener('click', () => {
-      burger.setAttribute('aria-expanded', 'false'); burger.setAttribute('aria-label', 'Open menu'); nav.classList.remove('menu-open');
+    $$('#site-menu a, .nav-links a').forEach((link) => link.addEventListener('click', () => {
+      burger?.setAttribute('aria-expanded', 'false'); burger?.setAttribute('aria-label', 'Open menu'); nav?.classList.remove('menu-open');
     }));
+    $$('[data-scroll]').forEach((button) => button.addEventListener('click', () => {
+      if (button.dataset.inquiryType) setInquiryType(button.dataset.inquiryType);
+      const target = $(button.dataset.scroll);
+      target?.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' });
+    }));
+    $$('.booking-list .booking, .sem-link').forEach((card) => {
+      const select = () => { setInquiryType(card.dataset.inquiryType || 'speaking'); $('#contact-form-wrap')?.scrollIntoView({ behavior: 'smooth', block: 'start' }); };
+      card.addEventListener('click', select);
+      card.addEventListener('keydown', (event) => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); select(); } });
+    });
+    document.addEventListener('click', (event) => {
+      const link = event.target.closest('a[href="#contact-form"]');
+      if (link?.dataset.inquiryType) setInquiryType(link.dataset.inquiryType);
+    });
     const dialog = $('#story-dialog');
-    dialog.addEventListener('click', (event) => { if (event.target === dialog) dialog.close(); });
-    document.addEventListener('keydown', (event) => { if (event.key === 'Escape') nav.classList.remove('menu-open'); });
-    if (matchMedia('(min-width: 980px)').matches) {
-      const visual = $('.hero-visual');
-      addEventListener('mousemove', (event) => {
-        if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-        visual.style.transform = `translate(${(event.clientX / innerWidth - .5) * 8}px,${(event.clientY / innerHeight - .5) * 6}px)`;
-      }, { passive: true });
+    $('#dialog-close')?.addEventListener('click', () => dialog?.close());
+    dialog?.addEventListener('click', (event) => { if (event.target === dialog) dialog.close(); });
+    document.addEventListener('keydown', (event) => { if (event.key === 'Escape') { nav?.classList.remove('menu-open'); burger?.setAttribute('aria-expanded', 'false'); } });
+    const visual = $('.hero-visual');
+    if (visual && matchMedia('(min-width:980px)').matches) addEventListener('mousemove', (event) => {
+      if (!matchMedia('(prefers-reduced-motion: reduce)').matches) visual.style.transform = `translate(${(event.clientX / innerWidth - .5) * 8}px,${(event.clientY / innerHeight - .5) * 6}px)`;
+    }, { passive: true });
+  }
+
+  function setupTopics() {
+    const popup = $('#topicPop'); const key = $('#topicPopK'); const body = $('#topicPopB');
+    if (!popup || !key || !body) return;
+    let pinned = false; let timer;
+    const dataForTopic = (topic) => {
+      const names = { fermentation: 'fermentation', sustainability: 'sustainability', secret: 'secret-diners-story', mother: 'mother' };
+      const story = (siteData?.copy?.essays || []).find((item) => item.id === names[topic]);
+      if (story) return { heading: story.category, text: story.paragraphs.join(' ') };
+      if (topic === 'speaking') return { heading: siteData?.copy?.speaking?.title || 'Public Speaking', text: siteData?.copy?.speaking?.intro || '' };
+      if (topic === 'storytelling') return { heading: 'Storytelling', text: siteData?.copy?.about?.quote || '' };
+      return { heading: 'Cocktails', text: siteData?.copy?.hero?.intro || '' };
+    };
+    const open = (topic) => {
+      const item = dataForTopic(topic); key.textContent = item.heading; body.textContent = item.text;
+      popup.classList.add('show'); $$('.chip').forEach((chip) => chip.classList.toggle('active', chip.dataset.topic === topic));
+    };
+    const close = () => { popup.classList.remove('show'); pinned = false; $$('.chip.active').forEach((chip) => chip.classList.remove('active')); };
+    $$('.chip').forEach((chip) => {
+      chip.addEventListener('mouseenter', () => { if (!pinned) { clearTimeout(timer); open(chip.dataset.topic); } });
+      chip.addEventListener('focus', () => open(chip.dataset.topic));
+      chip.addEventListener('click', (event) => { event.stopPropagation(); pinned = true; open(chip.dataset.topic); });
+    });
+    $('#strip')?.addEventListener('mouseleave', () => { if (!pinned) timer = setTimeout(close, 180); });
+    popup.addEventListener('mouseenter', () => clearTimeout(timer));
+    popup.addEventListener('mouseleave', () => { if (!pinned) timer = setTimeout(close, 180); });
+    $('#topicPopX')?.addEventListener('click', close);
+    document.addEventListener('click', (event) => { if (pinned && !popup.contains(event.target) && !event.target.closest('.chip')) close(); });
+    document.addEventListener('keydown', (event) => { if (event.key === 'Escape') close(); });
+  }
+
+  async function submitContact(event) {
+    event.preventDefault();
+    const form = event.currentTarget; const status = $('#inquiry-status'); const button = $('button[type="submit"]', form);
+    const phone = $('#inquiry-phone');
+    const digits = phone.value.replace(/\D/g, '');
+    phone.setCustomValidity(digits.length < 7 || digits.length > 15 ? 'Enter a phone number with 7 to 15 digits.' : '');
+    if (!form.reportValidity()) return;
+    if ($('#inquiry-website')?.value) { form.reset(); status.textContent = 'Thanks. Your inquiry has been received.'; return; }
+    if (!db) { status.textContent = 'The secure inbox is not connected yet. Please try again later.'; return; }
+    const values = new FormData(form);
+    const payload = {
+      full_name: String(values.get('full_name') || '').trim(),
+      email: String(values.get('email') || '').trim().toLowerCase(),
+      phone: String(values.get('phone') || '').trim(),
+      inquiry_type: String(values.get('inquiry_type') || ''),
+      message: String(values.get('message') || '').trim(),
+      consent: values.get('consent') === 'on'
+    };
+    button.disabled = true; status.textContent = 'Sending securely…';
+    try {
+      const { error } = await db.from('contact_inquiries').insert(payload);
+      if (error) throw error;
+      form.reset();
+      status.textContent = 'Thank you — your inquiry has been sent securely. Massi will follow up soon.';
+      toast('Thanks. Your inquiry is on its way to Massi.');
+    } catch (error) {
+      console.error('Contact inquiry failed:', error?.message || 'Network request failed');
+      status.textContent = 'We could not send that just now. Please check your connection and try again.';
+    } finally {
+      button.disabled = false;
     }
   }
 
-  async function getInitialContent() {
-    const response = await fetch('content.json', { cache: 'no-store' });
-    if (!response.ok) throw new Error('Starter content could not be loaded.');
-    const starter = await response.json();
-    if (!db) return starter;
-    const { data, error } = await db.from('site_content').select('content').eq('page_id', 'home').maybeSingle();
-    if (error) { console.warn('Supabase content fallback:', error.message); return starter; }
-    return data?.content || starter;
-  }
-
-  function setupSignups() {
+  function setupForms() {
+    $('#contact-form')?.addEventListener('submit', submitContact);
     $$('.signup-form, #diners-form').forEach((form) => form.addEventListener('submit', async (event) => {
       event.preventDefault();
-      const input = $('input[type="email"]', form); const email = input.value.trim().toLowerCase();
-      if (!email || !form.checkValidity()) { form.reportValidity(); return; }
-      if (!db) {
-        const subject = encodeURIComponent(form.id === 'diners-form' ? 'Secret Diners invitation' : 'Thirsty Dreamer updates');
-        toast('Sign-ups are not connected yet. Your email app will open instead.');
-        location.href = `mailto:massi@motherdrinks.co?subject=${subject}&body=${encodeURIComponent(`Please add ${email} to the ${form.id === 'diners-form' ? 'Secret Diners' : 'Thirsty Dreamer'} list.`)}`;
-        return;
-      }
+      const input = $('input[type="email"]', form); const email = input?.value.trim().toLowerCase();
+      if (!email || !form.reportValidity()) return;
+      if (!db) { toast('The sign-up list is not connected yet. Please try again later.'); return; }
       const type = form.id === 'diners-form' ? 'secret_diners' : 'dream_journal';
-      const button = $('button[type="submit"]', form); button.disabled = true;
-      const { error } = await db.from('waitlist_signups').upsert({ email, signup_type: type }, { onConflict: 'email,signup_type', ignoreDuplicates: true });
-      button.disabled = false;
-      if (error) { console.error(error); toast('We could not save that just now. Please email Massi directly.'); return; }
-      form.reset(); toast(type === 'secret_diners' ? 'Thanks — your interest is registered.' : 'Thanks for joining the Dream Journal.');
+      const button = $('button[type="submit"]', form); if (button) button.disabled = true;
+      try {
+        const { error } = await db.from('waitlist_signups').upsert({ email, signup_type: type }, { onConflict: 'email,signup_type', ignoreDuplicates: true });
+        if (error) throw error;
+        form.reset(); toast(type === 'secret_diners' ? 'Thanks — your interest is registered.' : 'Thanks for joining the Dream Journal.');
+      } catch (error) {
+        console.error('Signup insert failed:', error?.message || 'Network request failed');
+        toast('We could not save that just now. Please check your connection and try again.');
+      } finally { if (button) button.disabled = false; }
     }));
+    $('#social .ig') && $$('#social .ig').forEach((card) => card.addEventListener('click', () => {
+      if (dataUrl()) window.open(dataUrl(), '_blank', 'noopener,noreferrer');
+    }));
+    $('#instagram-cta')?.addEventListener('click', () => { if (dataUrl()) window.open(dataUrl(), '_blank', 'noopener,noreferrer'); });
   }
+  const dataUrl = () => safeExternal(siteData?.links?.instagram);
 
   async function boot() {
-    setupNavigation(); setupSignups();
-    try { applySiteData(await getInitialContent()); }
-    catch (error) { console.error(error); toast(error.message); }
-    if (!hasSupabase) console.info('Supabase is not configured yet; the site is showing its bundled starter copy.');
+    setupNavigation(); setupTopics(); setupForms();
+    try { renderSite(await loadContent()); }
+    catch (error) { console.error(error); toast(error.message || 'The site is temporarily unavailable.'); }
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot, { once: true });
   else boot();

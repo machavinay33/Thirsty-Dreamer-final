@@ -4,19 +4,20 @@
       "kicker": "NEVER STOP DREAMING",
       "titleStart": "Never Stop",
       "titleAccent": "Dreaming.",
-      "intro": "A life in hospitality, shaped by fermentation, sustainability, and the people gathered around the table.",
+      "intro": "A personal journal of cocktails, fermentation, hospitality, sustainability & the hard work of turning dreams into real drinks and real stories.",
       "meta": [
         "Toronto",
         "Hospitality",
-        "Fermentation"
+        "Fermentation",
+        "Dreams"
       ],
       "primaryCta": "Read Massi's story",
       "secondaryCta": "Get in touch",
       "scrollLabel": "Scroll"
     },
     "about": {
-      "eyebrow": "ROME · MANCHESTER · TORONTO",
-      "title": "A life built around hospitality.",
+      "eyebrow": "The Person Behind the Pour",
+      "title": "Massi doesn't just make drinks. He builds experiences people remember.",
       "paragraphs": [
         "My journey in the bar scene began in Rome, where I balanced childhood dreams with hard work. At 13, I became captivated by the guitar while helping my mother at her fish stand. At 14, I stepped into the busy bar culture of Via Serpenti, making cappuccinos every day. The work taught me discipline and a strong work ethic.",
         "At 15, I was making aperitivi and learning to make guests feel valued. At 18, I moved to the United Kingdom, learned to live independently, and worked my way up to group bar manager in Manchester while competing in the cocktail scene.",
@@ -25,23 +26,48 @@
       ],
       "quote": "“I train like I’ve never won, and I compete like I’ve never lost.” — Eileen Gu",
       "tags": [
-        "World Class Bartender · Canada 2022",
-        "ICCO Best Cocktail Bartender · 2023",
-        "Canada World Class Coach · 2023–24"
+        "Bartender",
+        "Entrepreneur",
+        "Storyteller",
+        "Hospitality Creative",
+        "Fermentation"
       ],
       "summary": "From the bars of Rome to co-owning Mother Cocktail Bar in Toronto, Massi’s journey is built around craft, resilience, and making every guest feel valued.",
-      "readMore": "Read the full story"
+      "readMore": "Read the full story",
+      "displayQuote": "We shouldn't just make drinks, but build rooms, experiences for people to remember."
     },
     "journal": {
-      "eyebrow": "FERMENTATION · SUSTAINABILITY · COMMUNITY",
-      "titleStart": "Stories",
-      "titleAccent": "from the journey",
-      "intro": "Fermentation, sustainable living, a table full of surprises, and the people at Mother Cocktail Bar.",
+      "eyebrow": "The Blog",
+      "titleStart": "The Dream Come True",
+      "titleAccent": "Journal",
+      "intro": "Notes from behind the bar — recipes, ferments, half-formed ideas, and the honest business of building something worth raising a glass to. Updated whenever the dream has something to say.",
       "signupLabel": "A note from behind the bar",
       "signupCopy": "Occasional stories on hospitality, fermentation, and the people who make it meaningful.",
       "signupButton": "Join the journal",
       "signupConsent": "I agree to receive occasional Thirsty Dreamer emails.",
-      "readMore": "Read the story →"
+      "readMore": "Read the journal →",
+      "cards": [
+        {
+          "category": "Sustainability",
+          "title": "Sustain Yourself First to Be Sustainable",
+          "storyId": "sustainability"
+        },
+        {
+          "category": "The Journey",
+          "title": "From a Dream to Reality",
+          "storyId": "about"
+        },
+        {
+          "category": "Fermentation",
+          "title": "Why Fermentation Is a Way of Thinking",
+          "storyId": "fermentation"
+        },
+        {
+          "category": "Hospitality",
+          "title": "The Future of Hospitality Is Human",
+          "storyId": "mother"
+        }
+      ]
     },
     "essays": [
       {
@@ -166,18 +192,54 @@
       "emailPlaceholder": "you@example.com"
     },
     "contact": {
-      "eyebrow": "LET'S TALK HOSPITALITY",
-      "title": "Have a good idea? Get in touch.",
-      "intro": "For collaborations, speaking, coaching, Mother Cocktail Bar, or a future Secret Diners table, reach Massi directly.",
-      "signoff": "Pull up a stool. The conversation can start here.",
-      "emailLabel": "Email Massi",
-      "emailDetail": "massi@motherdrinks.co",
-      "phoneLabel": "Call Massi",
-      "phoneDetail": "437-985-7677",
+      "eyebrow": "Let's Make Something",
+      "title": "Bring the dream into the room.",
+      "intro": "Whether it's a stage, a launch, a collaboration, or a table that doesn't officially exist — if it's about hospitality done with heart, Massi wants to hear about it.",
+      "signoff": "Pull up a stool. The dream's already pouring.",
       "instagramLabel": "Follow on Instagram",
       "instagramDetail": "@thirstydreamer",
       "motherLabel": "Mother Cocktail Bar",
-      "motherDetail": "Queen Street West · Toronto"
+      "motherDetail": "Queen Street West · Toronto",
+      "dream": "Don’t ever stop dreaming.",
+      "formTitle": "Tell Massi a little about your idea.",
+      "formIntro": "Share a few details and Massi will follow up using the contact information you provide.",
+      "nameLabel": "Your name",
+      "kindLabel": "What would you like to discuss?",
+      "messageLabel": "A few details about your idea",
+      "consent": "I agree that Massi can use these details to reply to my inquiry.",
+      "submitLabel": "Send inquiry",
+      "bookingCards": [
+        {
+          "title": "Public Speaking",
+          "detail": "Talks, keynotes & panels",
+          "kind": "speaking"
+        },
+        {
+          "title": "Brand Collaboration",
+          "detail": "Sponsored reels & product promo",
+          "kind": "brand"
+        },
+        {
+          "title": "Events",
+          "detail": "Pop-ups, takeovers & activations",
+          "kind": "events"
+        },
+        {
+          "title": "Blog",
+          "detail": "Recipes, features & guest posts",
+          "kind": "blog"
+        },
+        {
+          "title": "Secret Diners",
+          "detail": "Request an invitation",
+          "kind": "secret_diners"
+        },
+        {
+          "title": "Consultation",
+          "detail": "Hospitality & creative direction",
+          "kind": "consultation"
+        }
+      ]
     },
     "footer": {
       "tagline": "Never stop dreaming.",
@@ -187,7 +249,10 @@
       "linkFilm": "Films",
       "linkDiners": "Secret Diners",
       "linkContact": "Contact",
-      "linkAdmin": "Admin"
+      "linkAdmin": "Admin",
+      "credit": "Built by Layr Media",
+      "instagram": "Follow Massi on Instagram",
+      "mother": "Find Mother Cocktail Bar"
     },
     "portraits": {
       "one": "assets/placeholders/massi-photo-01.svg",
@@ -201,12 +266,117 @@
       "mother": "Mother",
       "diners": "Secret Diners",
       "contact": "Contact"
+    },
+    "speaking": {
+      "eyebrow": "Book Massi to Teach",
+      "title": "Seminars & Public Speaking",
+      "intro": "A bookable lineup of intimate workshops and talks for brand events, hospitality and private groups. Massi tailors each one to your room, your crowd, and your budget.",
+      "cards": [
+        {
+          "title": "Fermentation",
+          "kicker": "Hands-on Workshop · 90 min · up to 20",
+          "body": "A working session on wild flavour — kombucha, kefir, koji, and the patience they demand. Part science, part philosophy, all delicious. Guests leave with a starter and a new way of thinking about time.",
+          "kind": "speaking"
+        },
+        {
+          "title": "From a Dream to Reality",
+          "kicker": "Founder Talk · 45 min + Q&A",
+          "body": "The honest story of building rooms, bars, and ventures from nothing but an idea and a lot of nerve. For teams and creatives who want the real version — the doubt, the grind, the payoff.",
+          "kind": "speaking"
+        },
+        {
+          "title": "Sustain Yourself First",
+          "kicker": "Hospitality Keynote · 45 min",
+          "body": "Real sustainability in hospitality starts with the people, not the packaging. A candid talk on building careers and kitchens that last — without burning out the humans who run them.",
+          "kind": "speaking"
+        }
+      ],
+      "footer": "Half-day & custom formats available · Travel from Toronto ·",
+      "checkAvailability": "Check availability →"
+    },
+    "social": {
+      "eyebrow": "Already Pouring Online",
+      "title": "Where the dream already lives.",
+      "followers": "41.7K",
+      "handle": "@thirstydreamer",
+      "button": "Follow @thirstydreamer →",
+      "cards": [
+        {
+          "category": "Cocktail Education",
+          "title": "The Pisco Sour, three ways",
+          "views": "◷ 51.4K",
+          "topic": "cocktails"
+        },
+        {
+          "category": "Mother — Behind the Scenes",
+          "title": "Inside the room after dark",
+          "views": "◷ 77.5K",
+          "topic": "mother"
+        },
+        {
+          "category": "Toronto Food & Drink",
+          "title": "A bartender's guide to the city",
+          "views": "◷ 136K",
+          "topic": "storytelling"
+        },
+        {
+          "category": "Fermentation Experiments",
+          "title": "Week three: the koji diaries",
+          "views": "◷ 22K",
+          "topic": "fermentation"
+        },
+        {
+          "category": "Personal Reflections",
+          "title": "Why I still work the well",
+          "views": "◷ 17.9K",
+          "topic": "sustainability"
+        },
+        {
+          "category": "Secret Dinner Moments",
+          "title": "A table you weren't invited to",
+          "views": "◷ 28.3K",
+          "topic": "secret"
+        }
+      ]
+    },
+    "brand": {
+      "eyebrow": "Sponsored · Co-Shared Brand Content",
+      "title": "Put your bottle in the dream.",
+      "intro": "Massi makes branded content that doesn’t feel like an ad. Spirits, glassware, ingredients, venues — he weaves your product into a story his 41.7K already trust. One reel, filmed and posted from @thirstydreamer, reaching the exact audience that buys what you make.",
+      "subintro": "Work closely with Massi creating tailored brand content that reflects your ethos & brand philosophy.",
+      "reelSponsor": "Paid partnership · El Dorado Rum",
+      "reelViews": "8.2K",
+      "reelComments": "312",
+      "reelLikes": "1.1K",
+      "reelCaption": "The only way to drink aged rum. Three ways I'm pouring @eldorado_rum this week — no mixers required 🥃",
+      "reelTags": "#paidpartnership · #cocktails · #rum",
+      "steps": [
+        {
+          "title": "You brief the brand",
+          "description": "Tell Massi the product and the story you want told. A spirit launch, a glassware drop, a venue, an ingredient — anything hospitality-adjacent."
+        },
+        {
+          "title": "Together we shape a tailored Reel",
+          "description": "Massi concepts, shoots, and edits a short-form video in his own voice — the craft, the pour, the dream. Filmed at Mother or on location."
+        },
+        {
+          "title": "We post it together for more reach",
+          "description": "The reel goes live on @thirstydreamer to 41.7K engaged followers — plus usage rights so you can run it on your own channels."
+        }
+      ],
+      "typesLabel": "A fit for brands like",
+      "types": [
+        "Spirits & rum",
+        "Glassware",
+        "Bitters & mixers",
+        "Venues & festivals"
+      ],
+      "button": "Start a partnership →",
+      "rate": "Rate cards on request"
     }
   },
   "links": {
-    "email": "mailto:massi@motherdrinks.co",
     "instagram": "https://www.instagram.com/thirstydreamer?stkn=Mm8wbHdtdm85ZTY2",
-    "phone": "tel:+14379857677",
     "motherMap": "https://www.google.com/maps/search/?api=1&query=Mother+Cocktail+Bar+Toronto"
   }
 }

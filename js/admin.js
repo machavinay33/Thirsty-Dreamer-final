@@ -15,8 +15,9 @@
   let siteContent;
   let dirty = false;
   let allSignups = [];
+  let allInquiries = [];
   let toastTimer;
-  const visibleSections = ['navigation', 'hero', 'about', 'journal', 'essays', 'film', 'videos', 'collaborations', 'diners', 'contact', 'footer', 'portraits'];
+  const visibleSections = ['navigation', 'hero', 'about', 'journal', 'essays', 'speaking', 'social', 'brand', 'film', 'videos', 'collaborations', 'diners', 'contact', 'footer', 'portraits'];
   const pretty = (key) => key.replace(/([a-z])([A-Z])/g, '$1 $2').replace(/[_-]+/g, ' ').replace(/^./, (s) => s.toUpperCase());
   const getPath = (obj, path) => path.split('.').reduce((v, k) => v?.[k], obj);
   const setPath = (obj, path, value) => {
@@ -233,6 +234,78 @@
     }));
   }
 
+  async function refreshInquiries() {
+    const status = $('#inquiry-count');
+    status.textContent = 'Loading contact inquiries…';
+    const { data, error } = await client.from('contact_inquiries')
+      .select('id,full_name,email,phone,inquiry_type,message,status,consent,created_at')
+      .order('created_at', { ascending: false }).limit(1000);
+    if (error) {
+      allInquiries = [];
+      status.textContent = `Could not load inquiries: ${error.message}. Confirm that supabase/contact-inbox.sql was run.`;
+      $('#export-inquiries').disabled = true;
+      $('#inquiry-list').replaceChildren();
+      return;
+    }
+    allInquiries = data || [];
+    status.textContent = `${allInquiries.length} quer${allInquiries.length === 1 ? 'y' : 'ies'} loaded (most recent 1,000 max).`;
+    $('#export-inquiries').disabled = !allInquiries.length;
+    renderInquiries();
+  }
+
+  function renderInquiries() {
+    const list = $('#inquiry-list');
+    const filter = $('#inquiry-status-filter')?.value || 'all';
+    const rows = filter === 'all' ? allInquiries : allInquiries.filter((row) => row.status === filter);
+    if (!rows.length) {
+      const empty = document.createElement('div'); empty.className = 'inquiry-empty';
+      empty.textContent = allInquiries.length ? 'No inquiries match this filter.' : 'No contact inquiries yet.';
+      list.replaceChildren(empty); return;
+    }
+    const cardFor = (row) => {
+      const card = document.createElement('article'); card.className = `inquiry-card${row.status === 'new' ? ' is-new' : ''}`;
+      const head = document.createElement('div'); head.className = 'inquiry-card-head';
+      const identity = document.createElement('div');
+      const name = document.createElement('strong'); name.className = 'inquiry-card-name'; name.textContent = row.full_name; identity.append(name);
+      const date = document.createElement('span'); date.className = 'inquiry-card-date';
+      date.textContent = new Date(row.created_at).toLocaleString(); identity.append(date);
+      const badge = document.createElement('span'); badge.className = `inquiry-badge ${row.status}`; badge.textContent = row.status;
+      head.append(identity, badge); card.append(head);
+      const meta = document.createElement('span'); meta.className = 'inquiry-card-meta';
+      meta.textContent = String(row.inquiry_type || 'other').replaceAll('_', ' '); card.append(meta);
+      const contact = document.createElement('div'); contact.className = 'inquiry-card-contact';
+      const email = document.createElement('a'); email.href = `mailto:${encodeURIComponent(row.email)}`; email.textContent = row.email;
+      const phone = document.createElement('a'); phone.href = `tel:${String(row.phone || '').replace(/[^+\d]/g, '')}`; phone.textContent = row.phone;
+      contact.append(email, phone); card.append(contact);
+      const message = document.createElement('p'); message.className = 'inquiry-card-message'; message.textContent = row.message; card.append(message);
+      const controls = document.createElement('div'); controls.className = 'inquiry-card-actions';
+      const label = document.createElement('label'); label.className = 'sr-only'; label.textContent = `Status for ${row.full_name}`;
+      const select = document.createElement('select'); select.setAttribute('aria-label', `Status for ${row.full_name}`);
+      for (const value of ['new', 'read', 'archived']) { const option = document.createElement('option'); option.value = value; option.textContent = value.charAt(0).toUpperCase() + value.slice(1); option.selected = value === row.status; select.append(option); }
+      select.addEventListener('change', async () => {
+        select.disabled = true;
+        const { error } = await client.from('contact_inquiries').update({ status: select.value }).eq('id', row.id);
+        select.disabled = false;
+        if (error) { showToast(`Could not update inquiry: ${error.message}`, true); select.value = row.status; return; }
+        row.status = select.value; renderInquiries();
+      });
+      controls.append(label, select); card.append(controls); return card;
+    };
+    list.replaceChildren(...rows.map(cardFor));
+  }
+
+  function exportInquiries() {
+    if (!allInquiries.length) return;
+    const csvCell = (value) => `"${String(value ?? '').replace(/"/g, '""')}"`;
+    const headers = ['full_name', 'email', 'phone', 'inquiry_type', 'message', 'status', 'created_at'];
+    const lines = [headers, ...allInquiries.map((row) => headers.map((header) => row[header]))]
+      .map((row) => row.map(csvCell).join(','));
+    const blob = new Blob(['\ufeff' + lines.join('\r\n')], { type: 'text/csv;charset=utf-8' });
+    const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url;
+    a.download = `thirsty-dreamer-inquiries-${new Date().toISOString().slice(0, 10)}.csv`;
+    a.click(); setTimeout(() => URL.revokeObjectURL(url), 1000);
+  }
+
   function exportSignups() {
     if (!allSignups.length) return;
     const csvCell = (value) => `"${String(value ?? '').replace(/"/g, '""')}"`;
@@ -247,7 +320,7 @@
     if (!membership) throw new Error('This Supabase account is not on the website administrator list.');
     login.hidden = true; setup.hidden = true; editor.hidden = false; signout.hidden = false;
     $('#editor-message').textContent = `Signed in as ${user.email || 'administrator'}.`;
-    await loadContent(); await refreshSignups();
+    await loadContent(); await refreshSignups(); await refreshInquiries();
   }
 
   function bind() {
@@ -265,6 +338,9 @@
     });
     $('#refresh-signups').addEventListener('click', refreshSignups);
     $('#export-signups').addEventListener('click', exportSignups);
+    $('#refresh-inquiries').addEventListener('click', refreshInquiries);
+    $('#export-inquiries').addEventListener('click', exportInquiries);
+    $('#inquiry-status-filter').addEventListener('change', renderInquiries);
     signout.addEventListener('click', async () => { await client.auth.signOut(); editor.hidden = true; signout.hidden = true; login.hidden = false; setup.hidden = true; $('#login-message').textContent = 'You are signed out.'; });
     addEventListener('beforeunload', (event) => { if (dirty) { event.preventDefault(); event.returnValue = ''; } });
   }
