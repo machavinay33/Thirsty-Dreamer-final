@@ -349,7 +349,45 @@
     if (select && [...select.options].some((option) => option.value === type)) select.value = type;
   }
 
-  function setupNavigation() {
+  function setupInquiryDialog() {
+    const formWrap = $('#contact-form-wrap');
+    if (!formWrap) return () => {};
+
+    const dialog = document.createElement('dialog');
+    dialog.id = 'inquiry-dialog';
+    dialog.className = 'inquiry-dialog';
+    dialog.setAttribute('aria-modal', 'true');
+    const title = $('.contact-form-title', formWrap);
+    const intro = $('.contact-form-intro', formWrap);
+    if (title) title.id = 'inquiry-dialog-title';
+    if (intro) intro.id = 'inquiry-dialog-intro';
+    if (title) dialog.setAttribute('aria-labelledby', title.id);
+    if (intro) dialog.setAttribute('aria-describedby', intro.id);
+
+    const close = document.createElement('button');
+    close.type = 'button';
+    close.className = 'dialog-close inquiry-dialog-close';
+    close.setAttribute('aria-label', 'Close inquiry form');
+    close.textContent = '×';
+    close.addEventListener('click', () => dialog.close());
+    formWrap.hidden = false;
+    formWrap.classList.remove('reveal');
+    formWrap.classList.add('in');
+    dialog.append(close, formWrap);
+    document.body.append(dialog);
+
+    let opener = null;
+    dialog.addEventListener('click', (event) => { if (event.target === dialog) dialog.close(); });
+    dialog.addEventListener('close', () => opener?.focus({ preventScroll: true }));
+    return (type, trigger) => {
+      opener = trigger instanceof HTMLElement ? trigger : document.activeElement;
+      setInquiryType(type || 'consultation');
+      if (!dialog.open) dialog.showModal();
+      setTimeout(() => $('#inquiry-name')?.focus({ preventScroll: true }), 30);
+    };
+  }
+
+  function setupNavigation(openInquiry) {
     const nav = $('#nav'); const burger = $('#burger');
     const sync = () => nav?.classList.toggle('solid', scrollY > 40);
     addEventListener('scroll', sync, { passive: true }); sync();
@@ -358,22 +396,29 @@
       burger.setAttribute('aria-expanded', String(open)); burger.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
       nav?.classList.toggle('menu-open', open);
     });
-    $$('#site-menu a, .nav-links a').forEach((link) => link.addEventListener('click', () => {
+    $$('#site-menu a, .nav-links a, .nav-cta').forEach((link) => link.addEventListener('click', () => {
       burger?.setAttribute('aria-expanded', 'false'); burger?.setAttribute('aria-label', 'Open menu'); nav?.classList.remove('menu-open');
     }));
-    $$('[data-scroll]').forEach((button) => button.addEventListener('click', () => {
-      if (button.dataset.inquiryType) setInquiryType(button.dataset.inquiryType);
+    $$('[data-scroll]:not(.sem-link):not(.contact-request)').forEach((button) => button.addEventListener('click', (event) => {
+      if (button.dataset.scroll === '#contact-form' || button.matches('.sem-link, .contact-request')) {
+        event.preventDefault();
+        openInquiry(button.dataset.inquiryType || 'speaking', button);
+        return;
+      }
       const target = $(button.dataset.scroll);
       target?.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' });
     }));
-    $$('.booking-list .booking, .sem-link').forEach((card) => {
-      const select = () => { setInquiryType(card.dataset.inquiryType || 'speaking'); $('#contact-form-wrap')?.scrollIntoView({ behavior: 'smooth', block: 'start' }); };
+    $$('.booking-list .booking, .sem-link, .contact-request').forEach((card) => {
+      const select = (event) => { event?.preventDefault(); openInquiry(card.dataset.inquiryType || 'speaking', card); };
       card.addEventListener('click', select);
       card.addEventListener('keydown', (event) => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); select(); } });
     });
     document.addEventListener('click', (event) => {
-      const link = event.target.closest('a[href="#contact-form"]');
-      if (link?.dataset.inquiryType) setInquiryType(link.dataset.inquiryType);
+      const link = event.target.closest('a[href="#contact-form"], a[href="#contact"]');
+      if (link && !link.hasAttribute('data-scroll')) {
+        event.preventDefault();
+        openInquiry(link.dataset.inquiryType || 'consultation', link);
+      }
     });
     const dialog = $('#story-dialog');
     $('#dialog-close')?.addEventListener('click', () => dialog?.close());
@@ -474,7 +519,8 @@
   const dataUrl = () => safeExternal(siteData?.links?.instagram);
 
   async function boot() {
-    setupNavigation(); setupTopics(); setupForms();
+    const openInquiry = setupInquiryDialog();
+    setupNavigation(openInquiry); setupTopics(); setupForms();
     try { renderSite(await loadContent()); }
     catch (error) { console.error(error); toast(error.message || 'The site is temporarily unavailable.'); }
   }

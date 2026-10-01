@@ -341,3 +341,19 @@ nav.solid .nav-logo{height:48px}
 .topic-pop .chip[data-topic="storytelling"]{display:none!important}
 .story-dialog #story-body p{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:4;overflow:hidden}
 @media(max-width:760px){.nav-logo{height:54px}nav.solid .nav-logo{height:46px}}
+
+
+/* The inquiry form is intentionally available only in this focused dialog. */
+.inquiry-dialog{position:fixed;inset:0;margin:auto;width:min(820px,calc(100% - 28px));max-width:none;max-height:min(92dvh,940px);overflow:auto;padding:clamp(18px,4vw,36px);border:1px solid rgba(236,228,212,.22);border-radius:16px;background:radial-gradient(100% 120% at 100% 0%,rgba(156,90,54,.18),transparent 55%),linear-gradient(145deg,#262117,#17140f);color:var(--cream);box-shadow:0 35px 100px #000b;overscroll-behavior:contain}
+.inquiry-dialog::backdrop{background:rgba(9,8,6,.78);backdrop-filter:blur(6px)}
+.inquiry-dialog[open]{animation:story-in .2s ease-out}
+.inquiry-dialog .contact-form-wrap{margin:0;max-width:none;padding:clamp(15px,2.5vw,28px);border:0;border-radius:0;background:transparent;box-shadow:none;color:var(--cream)}
+.inquiry-dialog .contact-form-title{padding-right:40px}
+.inquiry-dialog .contact-form-intro{margin-bottom:20px}
+.inquiry-dialog-close{position:sticky;top:0;float:right;z-index:2;margin:0 -5px -42px 8px;background:#211d16;border-color:rgba(236,228,212,.28)}
+.inquiry-dialog .form-status:not(:empty){padding:10px 12px;border-radius:8px;background:rgba(236,228,212,.07)}
+@media(max-width:560px){.inquiry-dialog{width:calc(100% - 18px);max-height:calc(100dvh - 18px);padding:10px;border-radius:13px}.inquiry-dialog .contact-form-wrap{padding:13px 8px}.inquiry-dialog .contact-form-title{font-size:29px}.inquiry-dialog-close{margin-right:0}}
+@media(prefers-reduced-motion:reduce){.inquiry-dialog[open]{animation:none}}
+
+/* Let the flexible email field yield space to its button on narrow phones. */
+.secret-form input{min-width:0}
