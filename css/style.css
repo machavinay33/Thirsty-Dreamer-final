@@ -333,3 +333,11 @@ button,a,[role="button"]{-webkit-tap-highlight-color:transparent}button:focus-vi
 
 /* Contact fields use cream labels; keep them on the contrasting dark surface. */
 .contact-form-wrap{background:radial-gradient(90% 130% at 100% 0%,rgba(156,90,54,.17),transparent 60%),linear-gradient(145deg,#262117,#17140f);color:var(--cream)}
+
+/* Client polish: a more visible mark and short, readable popover previews. */
+.nav-logo{height:56px}
+nav.solid .nav-logo{height:48px}
+.topic-pop-b{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:4;overflow:hidden}
+.topic-pop .chip[data-topic="storytelling"]{display:none!important}
+.story-dialog #story-body p{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:4;overflow:hidden}
+@media(max-width:760px){.nav-logo{height:54px}nav.solid .nav-logo{height:46px}}

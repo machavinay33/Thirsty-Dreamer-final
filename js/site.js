@@ -36,6 +36,15 @@
     return typeof url === 'string' && /^https:\/\//i.test(url.trim()) ? url.trim() : '';
   }
 
+  function compactPreview(value, maxLength = 220) {
+    const text = String(value || '').replace(/\s+/g, ' ').trim();
+    if (text.length <= maxLength) return text;
+    const segment = text.slice(0, maxLength - 1);
+    const sentence = segment.lastIndexOf('. ');
+    const boundary = sentence >= maxLength * 0.62 ? sentence + 1 : segment.lastIndexOf(' ');
+    return `${segment.slice(0, boundary > 0 ? boundary : maxLength - 1).trimEnd()}…`;
+  }
+
   function setExternalLink(selector, url) {
     const node = $(selector);
     const safe = safeExternal(url);
@@ -55,7 +64,8 @@
     setText('#story-category', story.category || 'The Dream Journal');
     setText('#story-title', story.title || 'A story from behind the bar');
     const content = $('#story-body');
-    content.replaceChildren(...(Array.isArray(story.paragraphs) ? story.paragraphs : []).map((text) => {
+    const summary = compactPreview(Array.isArray(story.paragraphs) ? story.paragraphs.join(' ') : '');
+    content.replaceChildren(...(summary ? [summary] : []).map((text) => {
       const paragraph = document.createElement('p');
       paragraph.textContent = text;
       return paragraph;
@@ -108,7 +118,10 @@
     setText('.hero-never', hero.kicker);
     setText('.hero-intro', hero.intro);
     const heroActions = $$('#top button');
-    if (heroActions[0]) heroActions[0].textContent = `${hero.primaryCta || 'Read the Dream'} →`;
+      if (heroActions[0]) {
+        heroActions[0].textContent = `${hero.primaryCta || 'Read the Dream'} →`;
+        heroActions[0].dataset.scroll = '#about';
+      }
     if (heroActions[1]) heroActions[1].textContent = hero.secondaryCta || 'Get in touch';
     const meta = $('#top .hero-meta');
     if (meta) {
@@ -373,16 +386,16 @@
   }
 
   function setupTopics() {
+    $$('.chip[data-topic="storytelling"]').forEach((chip) => chip.remove());
     const popup = $('#topicPop'); const key = $('#topicPopK'); const body = $('#topicPopB');
     if (!popup || !key || !body) return;
     let pinned = false; let timer;
     const dataForTopic = (topic) => {
       const names = { fermentation: 'fermentation', sustainability: 'sustainability', secret: 'secret-diners-story', mother: 'mother' };
       const story = (siteData?.copy?.essays || []).find((item) => item.id === names[topic]);
-      if (story) return { heading: story.category, text: story.paragraphs.join(' ') };
-      if (topic === 'speaking') return { heading: siteData?.copy?.speaking?.title || 'Public Speaking', text: siteData?.copy?.speaking?.intro || '' };
-      if (topic === 'storytelling') return { heading: 'Storytelling', text: siteData?.copy?.about?.quote || '' };
-      return { heading: 'Cocktails', text: siteData?.copy?.hero?.intro || '' };
+      if (story) return { heading: story.category, text: compactPreview(story.paragraphs.join(' ')) };
+      if (topic === 'speaking') return { heading: siteData?.copy?.speaking?.title || 'Public Speaking', text: compactPreview(siteData?.copy?.speaking?.intro || '') };
+      return { heading: 'Cocktails', text: compactPreview(siteData?.copy?.hero?.intro || '') };
     };
     const open = (topic) => {
       const item = dataForTopic(topic); key.textContent = item.heading; body.textContent = item.text;
